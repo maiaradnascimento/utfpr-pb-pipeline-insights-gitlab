@@ -1,0 +1,71 @@
+%%%% CAPÍTULO 2 - REVISÃO DA LITERATURA (OU REVISÃO BIBLIOGRÁFICA, ESTADO DA ARTE, ESTADO DO CONHECIMENTO)
+%%
+%% O autor deve registrar seu conhecimento sobre a literatura básica do assunto, discutindo e comentando a informação já publicada.
+%% A revisão deve ser apresentada, preferencialmente, em ordem cronológica e por blocos de assunto, procurando mostrar a evolução do tema.
+%% Título e rótulo de capítulo (rótulos não devem conter caracteres especiais, acentuados ou cedilha)
+\chapter{Referencial Te\'orico}\label{cap:referencialTeorico}
+
+Este capítulo apresenta conceitos e fundamentos teóricos essenciais para compreensão do trabalho, incluindo DevOps e CI/CD, detecção de anomalias, XAI e trabalhos relacionados.
+
+\section{DevOps e CI/CD}\label{sec:devopsCICD}
+
+DevOps é uma cultura e conjunto de práticas que combina desenvolvimento de software (Dev) e operações de TI (Ops), visando encurtar o ciclo de vida do desenvolvimento de sistemas e fornecer entrega contínua com alta qualidade \citeonline{kim2016devops}. A Integração Contínua/Entrega Contínua (CI/CD) é uma prática fundamental do DevOps que automatiza a integração, teste e entrega de código \citeonline{humble2010continuous,shahin2017continuous,zhang2019continuous}.
+
+Estudos empíricos demonstram que organizações que adotam práticas de CI/CD apresentam melhorias significativas em qualidade de software, tempo de entrega e frequência de deploy \citeonline{kim2018accelerate,wang2019empirical}. A implementação de pipelines automatizados reduz erros humanos e acelera o feedback loop entre desenvolvimento e operações \citeonline{chen2015continuous,leite2019survey}.
+
+Pipelines CI/CD são sequências automatizadas de etapas (stages) e jobs que executam tarefas como compilação, testes, análise de código e deploy. No GitLab, pipelines são definidos através de arquivos \texttt{.gitlab-ci.yml} e executados em runners (máquinas virtuais ou containers).
+
+Apesar dos benefícios da automação, pipelines podem apresentar problemas como:
+\begin{itemize}
+    \item Gargalos de execução (jobs lentos que bloqueiam o pipeline)
+    \item Instabilidades (falhas intermitentes, timeouts)
+    \item Retrabalho (re-execuções desnecessárias)
+    \item Uso ineficiente de recursos (cache não utilizado, paralelização ausente)
+\end{itemize}
+
+A observabilidade de pipelines é essencial para identificar e corrigir esses problemas, mas muitas vezes requer acesso ao código-fonte ou configurações YAML, o que pode ser restritivo em ambientes com políticas de compliance rigorosas.
+
+\section{Detecção de anomalias}\label{sec:detecaoAnomalias}
+
+Detecção de anomalias é o processo de identificar padrões em dados que não se conformam ao comportamento esperado \citeonline{chandola2009anomaly}. Em pipelines CI/CD, anomalias podem representar execuções anormalmente lentas, falhas frequentes, ou padrões de uso de recursos incomuns.
+
+\subsection{Isolation Forest}\label{subsec:isolationForest}
+
+Isolation Forest é um algoritmo de detecção de anomalias baseado em árvores de decisão que identifica outliers através de partições aleatórias do espaço de features \citeonline{liu2008isolation,liu2012isolation}. O algoritmo é eficiente para alta dimensionalidade moderada e não requer dados rotulados, sendo adequado para problemas não supervisionados \citeonline{chandola2009anomaly,aggarwal2017outlier}.
+
+O Isolation Forest funciona isolando observações através de seleção aleatória de features e valores de split. Anomalias são mais fáceis de isolar (requerem menos partições) do que observações normais, resultando em scores de anomalia menores. O algoritmo apresenta complexidade computacional linear O(n), sendo escalável para grandes volumes de dados \citeonline{liu2012isolation}.
+
+\subsection{Métricas robustas}\label{subsec:metricasRobustas}
+
+Percentis (p50, p95, p99) e z-score são métricas estatísticas robustas que complementam algoritmos de ML para priorização e explicabilidade. Percentis fornecem thresholds adaptativos baseados na distribuição real dos dados, enquanto z-score quantifica o desvio de uma observação em relação à média em termos de desvios-padrão.
+
+\subsection{Clustering (K-Means)}\label{subsec:clustering}
+
+K-Means é um algoritmo de agrupamento não supervisionado que particiona dados em k clusters baseado em similaridade \citeonline{macqueen1967some,han2011data}. No contexto de pipelines, K-Means pode contextualizar achados por perfis de pipelines (curtas, médias, longas), permitindo thresholds adaptativos por cluster e reduzindo falsos positivos. A validação de clusters pode ser realizada através de métricas como silhouette coefficient \citeonline{rousseeuw1987silhouettes}.
+
+\section{XAI aplicada}\label{sec:xaiAplicada}
+
+Explainable AI (XAI) refere-se a técnicas que tornam modelos de ML interpretáveis e explicáveis para humanos \citeonline{guidotti2018survey,adadi2018explaining}. No contexto deste trabalho, explicações concisas são geradas combinando percentis, z-score e evidências numéricas, seguindo abordagens de explicabilidade local e global \citeonline{ribeiro2016should,lundberg2017unified}.
+
+Por exemplo: ``seu stage test está 2,7$\sigma$ acima do p50 do cluster — sugere paralelização/\texttt{parallel: 4}''. Essas explicações tornam as recomendações acionáveis e justificadas quantitativamente, aumentando a confiança dos engenheiros nas recomendações geradas pelo sistema.
+
+\section{Trabalhos relacionados}\label{sec:trabalhosRelacionados}
+
+A \autoref{tab:trabalhosRelacionados} apresenta uma síntese comparativa entre abordagens existentes e a proposta deste trabalho.
+
+\begin{tabframed}[htb]
+\centering
+\caption{Comparação entre abordagens existentes e proposta}
+\label{tab:trabalhosRelacionados}
+\small
+\begin{tabular}{|p{2.8cm}|p{2.2cm}|p{2.5cm}|p{2cm}|p{2.5cm}|}
+\hline
+\textbf{Abordagem} & \textbf{Acesso a código/YAML} & \textbf{Foco} & \textbf{Custo/licença} & \textbf{Explicabilidade} \\ \hline
+MCP/MLOps clássicos & Exige acesso & Treino/retreino de modelos & Variável & Média/Alta \\ \hline
+Ferramentas APM (Datadog/Dynatrace) & Frequentemente exige & Observabilidade ampla & Pago & Baixa/Média \\ \hline
+\textbf{Proposta (este trabalho)} & \textbf{Não exige} & \textbf{Pipelines GitLab (execução)} & \textbf{Open source} & \textbf{Alta (percentis + z-score)} \\ \hline
+\end{tabular}
+\fonte{}
+\end{tabframed}
+
+A principal diferença da proposta é operar exclusivamente com dados de execução (metadados de pipelines/jobs e logs), sem necessidade de acesso ao código-fonte ou arquivos de configuração, mantendo alta explicabilidade através de estatísticas robustas e evidências quantitativas.

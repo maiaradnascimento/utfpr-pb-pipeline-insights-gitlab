@@ -1,0 +1,54 @@
+% CAPÍTULO 6 - CONCLUSÕES E PERSPECTIVAS
+\chapter{Conclusão}\label{cap:conclusoes}
+
+Este trabalho apresentou o desenvolvimento e validação de um sistema para análise inteligente de pipelines CI/CD do GitLab, com detecção de anomalias e geração de recomendações automáticas, operando exclusivamente com dados de execução coletados via API, sem necessidade de acesso ao código-fonte ou arquivos de configuração.
+
+O sistema demonstra que é viável detectar anomalias e gerar recomendações úteis a partir apenas de dados de execução do GitLab. A combinação de estatística robusta (percentis, z-score) com ML não supervisionado (Isolation Forest, K-Means) fornece sinal explicável e operacionalizável, enquanto o dashboard auto-contido acelera a revisão humana.
+
+A arquitetura incremental e idempotente garante processamento eficiente, processando apenas novos dados e evitando reprocessamento desnecessário. O Model Registry permite versionamento e reprodutibilidade, facilitando evolução e manutenção do sistema.
+
+Do ponto de vista técnico, a escolha de Python, PostgreSQL, FastAPI e Streamlit mostrou-se eficiente, conferindo agilidade ao desenvolvimento e facilidade de manutenção. Academicamente e profissionalmente, o sistema comprova sua viabilidade; socialmente, fornece uma ferramenta acessível (open source) para apoiar times DevOps na otimização de pipelines.
+
+\section{Dificuldades encontradas}\label{sec:dificuldades}
+
+Dentre os principais desafios encontrados:
+
+\begin{itemize}
+    \item \textbf{Processamento incremental:} implementação do padrão Watermark e UPSERT idempotente exigiu cuidado para garantir consistência
+    \item \textbf{Feature engineering:} agregação por \texttt{entity\_key} (job\_name) requer atenção para não perder granularidade importante
+    \item \textbf{Explicabilidade:} combinar percentis, z-score e evidências numéricas de forma clara e acionável
+    \item \textbf{Versionamento de modelos:} garantir reprodutibilidade e compatibilidade entre versões de modelos e features
+\end{itemize}
+
+\section{Objetivos alcançados}\label{sec:objetivosAlcancados}
+
+Os objetivos específicos foram atingidos:
+
+\begin{enumerate}
+    \item \textbf{Coleta e normalização:} sistema coleta dados via API do GitLab e normaliza em formato estruturado
+    \item \textbf{Modelos de detecção:} Isolation Forest e K-Means implementados e integrados com estatística robusta
+    \item \textbf{Recomendações automáticas:} estratégia inteligente gera recomendações com justificativas quantitativas e links para evidências
+    \item \textbf{Dashboard:} HTML auto-contido com visualizações e explicações acessíveis, adequado para revisão rápida
+\end{enumerate}
+
+\section{Trabalhos futuros}\label{sec:trabalhosFuturos}
+
+Como sugestão de implementações futuras, recomenda-se:
+
+\begin{itemize}
+    \item \textbf{Novos detectores:} LOF (Local Outlier Factor), One-Class SVM para diversificar técnicas de detecção de anomalias
+    \item \textbf{Otimização de hiperparâmetros:} Bayesian Optimization para ajuste automático de hiperparâmetros do Isolation Forest
+    \item \textbf{Métricas avançadas:} Cache hit rate e granularidade de testes (sharding por tempo) para recomendações mais precisas
+    \item \textbf{Explicabilidade aprimorada:} XAI local utilizando LIME/SHAP para explicações mais detalhadas das predições
+    \item \textbf{Coleta de logs:} Coleta sob demanda de logs completos (com quotas e rate limiting) para análise mais profunda
+    \item \textbf{Integrações:} Webhook do GitLab; comentário automático no MR com sumário do dashboard
+    \item \textbf{Multi-plataforma:} Suporte a outros sistemas CI/CD (GitHub Actions, Jenkins, etc)
+    \item \textbf{Dashboard interativo:} Drill-down e filtros avançados para análise exploratória
+    \item \textbf{Recomendações corporativas com LLM:} Desenvolvimento de módulo baseado em \textit{Large Language Models} (LLMs) para geração de recomendações personalizadas baseadas em regras corporativas específicas. Este módulo utilizaria \textit{Retrieval-Augmented Generation} (RAG) para consultar uma base de conhecimento corporativa estruturada, incluindo FAQ interno, base de dados histórica de incidentes e soluções, documentação técnica da organização, e regras de negócio específicas. Esta abordagem permitiria que empresas adaptem o sistema às suas políticas e práticas internas, mantendo os princípios de privacidade e segurança do sistema atual, sem necessidade de expor código-fonte ou configurações sensíveis.
+\end{itemize}
+
+\section{Considerações finais}\label{sec:consideracoesFinais}
+
+O sistema desenvolvido oferece uma prova de conceito open source com foco em privacidade, explicabilidade e ação. A arquitetura é extensível para novas features e modelos, e o código está disponível para contribuições da comunidade.
+
+Como contribuição, o trabalho demonstra a aplicabilidade de IA/ML a um problema prático de DevOps com restrição de dados, fomentando pesquisa em observabilidade de pipelines e oferecendo uma ferramenta útil para times DevOps que buscam otimizar seus pipelines CI/CD sem comprometer segurança ou compliance.

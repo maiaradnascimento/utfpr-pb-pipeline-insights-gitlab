@@ -1,0 +1,81 @@
+name: pipeline-optimizer-with-data
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: pipeline-optimizer-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-pipeline_optimizer}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASS:-postgres}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Scripts Container (com dados) - Inicializa o banco
+  pipeline-optimizer-scripts:
+    image: ${DOCKER_USER:-seu-usuario}/pipeline-optimizer:${VERSION:-latest-with-data}
+    container_name: pipeline-optimizer-scripts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      GITLAB_API: ${GITLAB_API:-https://gitlab.com/api/v4}
+      PROJECT_ID: ${PROJECT_ID}
+      TOKEN: ${TOKEN}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-pipeline_optimizer}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-postgres}
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASS:-postgres}@postgres:5432/${DB_NAME:-pipeline_optimizer}
+    working_dir: /app
+    command: /app/scripts/init-db.sh && echo "✅ Banco inicializado!" && tail -f /dev/null
+    restart: "no"
+
+  # API FastAPI
+  api:
+    image: ${DOCKER_USER:-seu-usuario}/pipeline-optimizer:${VERSION:-latest-with-data}
+    container_name: pipeline-optimizer-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      pipeline-optimizer-scripts:
+        condition: service_started
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-pipeline_optimizer}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-postgres}
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASS:-postgres}@postgres:5432/${DB_NAME:-pipeline_optimizer}
+      PROJECT_ID: ${PROJECT_ID}
+    ports:
+      - "8000:8000"
+    command: /app/scripts/init-db.sh && uvicorn src.api.app:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+
+  # UI Streamlit
+  ui:
+    image: ${DOCKER_USER:-seu-usuario}/pipeline-optimizer:${VERSION:-latest-with-data}
+    container_name: pipeline-optimizer-ui
+    depends_on:
+      - api
+    environment:
+      API_BASE_URL: http://api:8000
+    ports:
+      - "${STREAMLIT_PORT:-8501}:8501"
+    command: streamlit run src/ui/app_incremental.py --server.address 0.0.0.0 --server.port 8501
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+

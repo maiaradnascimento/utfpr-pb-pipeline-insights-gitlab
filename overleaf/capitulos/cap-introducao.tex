@@ -1,0 +1,64 @@
+%%%% CAPÍTULO 1 - INTRODUÇÃO
+%%
+%% Deve apresentar uma visão global da pesquisa, incluindo: breve histórico, importância e justificativa da escolha do tema,
+%% delimitações do assunto, formulação de hipóteses e objetivos da pesquisa e estrutura do trabalho.
+
+%% Título e rótulo de capítulo (rótulos não devem conter caracteres especiais, acentuados ou cedilha)
+\chapter{Introdução}\label{cap:introducao}
+
+A automação por pipelines \gls{cicd} é central no \gls{devops}, mas gargalos, instabilidades e retrabalho ainda são frequentes em ambientes de alta escala. Em contextos com políticas restritivas de acesso (compliance), é desejável extrair inteligência apenas dos artefatos de execução (metadados de pipelines/jobs e logs) para orientar melhorias. Este trabalho propõe e valida um sistema que coleta, analisa e explica o comportamento de pipelines \gls{gitlab}, sem acesso ao código-fonte, para detectar anomalias e gerar recomendações aplicáveis.
+
+\section{Problema e diferencial}\label{sec:problemaDiferencial}
+
+O problema central deste trabalho consiste em identificar e priorizar, de forma automática, anomalias e oportunidades de otimização em pipelines GitLab, com baixo acoplamento e alto respeito à privacidade. O diferencial da proposta é operar apenas com dados de execução (API + logs) e entregar recomendações acionáveis, mantendo neutralidade em relação a repositórios e YAML.
+
+\section{Objetivos}\label{sec:objetivos}
+
+A seguir são apresentados os objetivos geral e específicos que o presente projeto pretende alcançar ao final de seu desenvolvimento.
+
+\subsection{Objetivo geral}\label{subsec:objetivoGeral}
+
+Desenvolver e validar um sistema baseado em estatística robusta e \gls{ml} não supervisionado para detectar anomalias e gerar recomendações de otimização em pipelines \gls{cicd} do \gls{gitlab}, sem acesso ao código-fonte.
+
+\subsection{Objetivos específicos}\label{subsec:objetivosEspecificos}
+
+\begin{enumerate}
+    \item Coletar e normalizar dados de pipelines/jobs e trechos de logs via API do GitLab.
+    \item Aplicar modelos de detecção de anomalias (\gls{if}) e contextualização por agrupamento (\gls{kmeans}), combinados a estatística robusta.
+    \item Gerar recomendações automáticas (cache, paralelização, retries, timeouts, ordenação de jobs), com justificativas quantitativas e links para evidências.
+    \item Disponibilizar um dashboard auto-contido com visualizações e explicações acessíveis, adequado para revisão rápida por times DevOps.
+\end{enumerate}
+
+\section{Justificativa}\label{sec:justificativa}
+
+A justificativa para este trabalho pode ser dividida em três dimensões:
+
+\begin{itemize}
+    \item \textbf{Organizacional:} reduz esforço manual de troubleshooting, padroniza heurísticas e distribui conhecimento.
+    \item \textbf{Técnica:} preserva compliance e segurança ao não ler YAML/código; facilita adoção em ambientes multi-time e multi-repo.
+    \item \textbf{Acadêmica:} demonstra a aplicabilidade de IA/\gls{ml} a um problema prático de \gls{devops} com restrição de dados, fomentando pesquisa em observabilidade de pipelines.
+\end{itemize}
+
+\section{Questões de pesquisa}\label{sec:questoesPesquisa}
+
+Este trabalho busca responder às seguintes questões:
+
+\begin{itemize}
+    \item \textit{Q1.} É possível detectar anomalias úteis usando somente dados de execução?
+    \item \textit{Q2.} Regras baseadas em percentis adaptativos (p95/p99) complementam \gls{ml} para recomendações explicáveis?
+    \item \textit{Q3.} Qual o custo estimado de coleta/armazenamento e o tempo de processamento por análise para uso cotidiano?
+\end{itemize}
+
+\section{Estrutura do trabalho}\label{sec:estruturaTrabalho}
+
+Este trabalho está organizado em capítulos. O Capítulo 1 apresentou a introdução do trabalho, os objetivos e a justificativa para o desenvolvimento do mesmo.
+
+O \gls{cap.} 2 apresenta o referencial teórico que abrange os temas e conceitos considerados essenciais para o desenvolvimento do trabalho, incluindo \gls{devops} e \gls{cicd}, detecção de anomalias, \gls{xai} e trabalhos relacionados.
+
+No \gls{cap.} 3 são descritos os materiais e o método empregados para o desenvolvimento do trabalho, incluindo a arquitetura proposta, variáveis e features, procedimento experimental e métricas de avaliação.
+
+No \gls{cap.} 4 estão os resultados obtidos com a execução da metodologia proposta, incluindo artefatos gerados, achados ilustrativos e validação.
+
+No \gls{cap.} 5 são apresentadas as conclusões do trabalho e perspectivas futuras.
+
+Por fim, estão as referências bibliográficas utilizadas para fundamentar este documento.

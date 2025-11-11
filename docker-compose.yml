@@ -1,0 +1,83 @@
+name: pipeline-optimizer
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: pipeline-optimizer-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-pipeline_optimizer}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASS:-postgres}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Scripts Container
+  pipeline-optimizer-scripts:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pipeline-optimizer-scripts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # GitLab API público
+      GITLAB_API: ${GITLAB_API:-https://gitlab.com/api/v4}
+      PROJECT_ID: ${PROJECT_ID}
+      TOKEN: ${TOKEN}
+      # Database
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-pipeline_optimizer}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-postgres}
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASS:-postgres}@postgres:5432/${DB_NAME:-pipeline_optimizer}
+      API_BASE_URL: http://api:8000
+    volumes:
+      # Monta o código fonte
+      - ./src:/app/src:ro
+      # Monta a pasta de dados para persistir os resultados
+      - ./dados:/app/dados
+      # Monta models para persistir modelos treinados
+      - ./models:/app/models
+    working_dir: /app
+    restart: "no"
+
+  # API FastAPI
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pipeline-optimizer-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-pipeline_optimizer}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASS: ${DB_PASS:-postgres}
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASS:-postgres}@postgres:5432/${DB_NAME:-pipeline_optimizer}
+      PROJECT_ID: ${PROJECT_ID}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src:ro
+      - ./models:/app/models:ro
+    command: uvicorn src.api.app:app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+

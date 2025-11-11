@@ -1,0 +1,61 @@
+%%%% LISTA DE ABREVIATURAS E SIGLAS 
+%%
+%% Relação, em ordem alfabética, das abreviaturas (representação de uma palavra por meio de alguma(s) de sua(s) sílaba(s) ou
+%% letra(s)), siglas (conjunto de letras iniciais dos vocábulos e/ou números que representa um determinado nome) e acrônimos
+%% (conjunto de letras iniciais dos vocábulos e/ou números que representa um determinado nome, formando uma palavra pronunciável).
+%%
+%% Este arquivo para definição de abreviaturas, siglas e acrônimos é utilizado com a opção "glossaries" (pacote)
+
+%% Abreviaturas: \abreviatura{rótulo}{representação}{definição}
+
+\abreviatura{art.}{art.}{Artigo}
+\abreviatura{cap.}{cap.}{Capítulo}
+\abreviatura{sec.}{sec.}{Seção}
+
+%% Siglas: \sigla{rótulo}{representação}{definição}
+
+%% Siglas relacionadas ao TCC sobre Pipeline Optimizer
+\sigla{cicd}{CI/CD}{Integração Contínua e Entrega Contínua, do inglês \textit{Continuous Integration/Continuous Delivery}}
+\sigla{devops}{DevOps}{Combinação de Desenvolvimento e Operações, do inglês \textit{Development and Operations}}
+\sigla{ml}{ML}{Aprendizado de Máquina, do inglês \textit{Machine Learning}}
+\sigla{xai}{XAI}{Inteligência Artificial Explicável, do inglês \textit{Explainable Artificial Intelligence}}
+\sigla{etl}{ETL}{Extração, Transformação e Carga, do inglês \textit{Extract, Transform, Load}}
+\sigla{json}{JSON}{\textit{JavaScript Object Notation}}
+\sigla{yaml}{YAML}{\textit{YAML Ain't Markup Language}}
+\sigla{html}{HTML}{\textit{HyperText Markup Language}}
+\sigla{rest}{REST}{\textit{Representational State Transfer}}
+\sigla{http}{HTTP}{\textit{HyperText Transfer Protocol}}
+\sigla{gitlab}{GitLab}{Plataforma de desenvolvimento de software baseada em \textit{Git}}
+\sigla{postgresql}{PostgreSQL}{Sistema de gerenciamento de banco de dados relacional}
+\sigla{python}{Python}{Linguagem de programação de alto nível}
+\sigla{scikit}{scikit-learn}{Biblioteca de aprendizado de máquina para \textit{Python}}
+\sigla{pandas}{pandas}{Biblioteca de análise de dados para \textit{Python}}
+\sigla{numpy}{NumPy}{\textit{Numerical Python}}
+\sigla{fastapi}{FastAPI}{\textit{Framework web} moderno para \textit{Python}}
+\sigla{streamlit}{Streamlit}{\textit{Framework} para criação de aplicações \textit{web} em \textit{Python}}
+\sigla{abnt}{ABNT}{Associação Brasileira de Normas Técnicas}
+\sigla{utfpr}{UTFPR}{Universidade Tecnológica Federal do Paraná}
+\sigla{tcc}{TCC}{Trabalho de Conclusão de Curso}
+
+%% Siglas estatísticas e métricas
+% Nota: Percentis (p50, p75, p90, p95, p99) e z-score são símbolos matemáticos/conceitos estatísticos, não siglas
+% Removidos conforme orientação ABNT - siglas são abreviações de nomes/termos, não símbolos matemáticos
+
+%% Siglas de algoritmos e técnicas
+\sigla{kmeans}{K-Means}{Algoritmo de agrupamento não supervisionado baseado em particionamento, do inglês \textit{K-Means}}
+\sigla{if}{Isolation Forest}{Algoritmo de detecção de anomalias baseado em árvores de isolamento, do inglês \textit{Isolation Forest}}
+
+%% LEIA:
+
+%% Para usar o \gls, você deve colocar a sigla aqui em \sigla
+
+%% ADICIONAR SIGLAS: Quando você inclui alguma sigla, pode ser necessário compilar umas duas vezes para essa aparecer na lista de siglas.
+
+%% ATENÇÃO REMOVER SIGLAS: se você remover a sigla do seu texto (não for usar mais), você deve comentar essa aqui e remover os \gls{} dessa sigla (se não vai ficar aparecendo a sigla na lista). Em caso de ERRO, quando o LaTeX informa que você ainda tem a sigla no texto, mesmo que não tenha. Você deve limpar o cache - no OverLeaf, clique no erro, vá:
+%  ->view error
+%%   ->(role para baixo, até o final)
+%%     ->e clique em Clear cached files
+
+
+%% Acrônimos: \acronimo{rótulo}{representação}{definição}
+%\acronimo{gimp}{Gimp}{Programa de Manipulação de Imagem GNU, do inglês \textit{GNU Image Manipulation Program}}

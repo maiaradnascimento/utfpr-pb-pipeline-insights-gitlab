@@ -1,0 +1,8 @@
+%%%% RESUMO
+%%
+%% Apresentação concisa dos pontos relevantes de um texto, fornecendo uma visão rápida e clara do conteúdo e das conclusões do
+%% trabalho.
+
+\begin{resumoutfpr}%% Ambiente resumoutfpr
+Este trabalho apresenta um sistema para análise de pipelines de Integração Contínua/Entrega Contínua (CI/CD) no GitLab com detecção de anomalias e recomendações automatizadas, preservando a privacidade por não exigir acesso ao \texttt{.gitlab-ci.yml} nem ao código-fonte. Os dados são coletados via API do GitLab (pipelines, jobs e trechos de logs), normalizados e analisados por uma abordagem híbrida: estatística robusta (p50--p99, média, desvio-padrão, z-score) e ML não supervisionado (Isolation Forest, K-Means). O sistema gera um dashboard HTML auto-contido com visualizações, explicações acessíveis (XAI leve) e links diretos para pipelines/jobs. Os resultados iniciais com projetos públicos indicam viabilidade prática, aderência aos requisitos funcionais (RF03: ML, RF04: recomendações) e potencial de ganho em tempo de execução e redução de falhas.
+\end{resumoutfpr}

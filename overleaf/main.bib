@@ -1,0 +1,1279 @@
+%%%% REFERÊNCIAS
+%%
+%% Conjunto padronizado de elementos descritivos retirados de um documento, que permite sua identificação individual.
+%%
+%% Cada entrada no arquivo BibTeX segue um formato padrão. Este formato muda ligeiramente baseado no tipo de entrada, mas a sintaxe
+%% continua a mesma.
+%%
+%% O rótulo de cada entrada não pode conter caracteres especiais, acentuados ou cedilha.
+%%
+%% A formatação do texto no campo "AUTHOR" deve obedecer algumas regras:
+%%   - Acento agudo:        "á = {\'a}".
+%%   - Acento crase:        "à = {\`a}".
+%%   - Acento til:          "ã = {\~a}".
+%%   - Acento circunflexo:  "ê = {\^e}".
+%%   - Acento trema:        "ü = {\"u}".
+%%   - Acento na letra i:   "í = {\'\i}".
+%%   - Cedilha:             "ç = {\c{c}}".
+%%   - Sobrenome composto:  "Santos, Filho, Jos{\'e} C. S.; da Silva, Erivanildo Lopes".
+%%   - Nome de organização: "{\mbox IONA Technologies PLC}".
+%%
+%% A formatação do texto no campo "TITLE" deve obedecer algumas regras (também válidas para o texto no campo "AUTHOR"):
+%%   - MAIÚSCULAS: "REAL = {REAL}".
+%%   - Minúsculas: "real = {real}".
+%%   - CamelCase:  "Real = {R}eal".
+
+%% TIPOS DE ENTRADA
+%%
+%% Ao inserir uma referência no banco de dados, a primeira coisa a decidir é o tipo de entrada. Existem vários tipos de entrada, mas
+%% não são completas, porém são suficientes para o BibTeX fornecer entradas para lidar com praticamente qualquer tipo de referência
+%% razoavelmente bem.
+
+%% ARTICLE - Um artigo de um jornal ou revista.
+%%   - Campos requeridos: AUTHOR, TITLE, JOURNAL e YEAR.
+%%   - Campos opcionais: VOLUME, NUMBER, PAGES, MONTH e NOTE.
+
+@ARTICLE{Guimaraes2003,
+  AUTHOR   = {Guimar{\~a}es, Eliane G. and Maffeis, Antonio T. and Pereira, James L. and Russo, Bruno G. and Cardozo, Eleri and Bergerman, Marcel and Magalh{\~a}es, Mauricio F.},
+  TITLE    = {{REAL}},
+  JOURNAL  = {IEEE Transactions on Education},
+  YEAR     = {2003},
+  VOLUME   = {46},
+  NUMBER   = {1},
+  PAGES    = {37--42},
+  MONTH    = feb,
+  SUBTITLE = {a virtual laboratory for mobile robot experiment}
+}
+
+@article{rodrigues2020importancia,
+  title={A IMPORT{\^A}NCIA DO MARKETING DIGITAL PARA MICRO E PEQUENAS EMPRESAS},
+  author={Rodrigues, Lillian Cherrine and Silva, Jo{\~a}o Ant{\^o}nio and Senra, K{\'a}tia and Alvim, Pedro Henrique and Ribeiro, Alecir Vitorino},
+  journal={REVISTA DE TRABALHOS ACAD{\^E}MICOS--CENTRO UNIVERSO JUIZ DE FORA},
+  volume={1},
+  number={11},
+  year={2020}
+}
+@article{9103568,
+  author = {Miklosik, Andrej e Evans, Nina},
+  journal = {IEEE Access}, 
+  title = {Impacto do Big Data e do Machine Learning na Transformação Digital em Marketing: Uma Revisão da Literatura}, 
+  year={2020},
+  volume = {8},
+  number = {},
+  pages = {101284-101292},
+  keywords ={Big Data;Negócios;Indústrias;Mineração de dados;Aprendizado de máquina;Mídia;Transformações;Big data;transformação digital;marketing;gerenciamento de informações;tecnologias disruptivas;aprendizado de máquina (ML)},
+  doi ={10.1109/ACCESS.2020.2998754}}
+
+@article{MA2020481,
+title = {Machine learning and AI in marketing – Connecting computing power to human insights},
+journal = {International Journal of Research in Marketing},
+volume = {37},
+number = {3},
+pages = {481-504},
+year = {2020},
+issn = {0167-8116},
+doi = {https://doi.org/10.1016/j.ijresmar.2020.04.005},
+url = {https://www.sciencedirect.com/science/article/pii/S0167811620300410},
+author = {Liye Ma and Baohong Sun},
+keywords = {Artificial intelligence (AI), Machine learning, Digital marketing, Big data, Unstructured data, Tracking data, Network, Prediction, Interpretation, Marketing theory},
+}
+%% BOOK - Um livro com uma editora explícita.
+%%   - Campos requeridos: AUTHOR ou EDITOR, TITLE, PUBLISHER e YEAR.
+%%   - Campos opcionais: VOLUME ou NUMBER, SERIES, ADDRESS, EDITION, MONTH e NOTE.
+
+
+@book{Pressman2009,
+  title={Engenharia de Software - 7.ed.},
+  author={Pressman, Roger S.},
+  pages = {107},
+  isbn={9788580550443},
+  url={https://books.google.com.br/books?id=y0rH9wuXe68C},
+  year={2009},
+  publisher={McGraw Hill Brasil},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+%% BOOKLET - Uma obra impressa mas sem uma editora ou instituição patrocinadora.
+%%   - Campos requeridos: TITLE.
+%%   - Campos opcionais: AUTHOR, HOWPUBLISHED, ADDRESS, MONTH, YEAR e NOTE.
+
+@BOOKLET{Thompson2001,
+  TITLE        = {X-Ray Data Booklet},
+  AUTHOR       = {Thompson, Albert C. and Vaughan, Douglas},
+  HOWPUBLISHED = {Lawrence Berkeley National Laboratory, University of California},
+  ADDRESS      = {California, USA},
+  MONTH        = jan,
+  YEAR         = {2001},
+  PAGES        = {457}
+}
+
+%% CONFERENCE - O mesmo que "INPROCEEDINGS", incluído para compatibilidade de escrita.
+%%   - Campos requeridos: AUTHOR, TITLE, BOOKTITLE e YEAR.
+%%   - Campos opcionais: EDITOR, VOLUME ou NUMBER, SERIES, PAGES, ADDRESS, MONTH, ORGANIZATION, PUBLISHER e NOTE.
+
+@CONFERENCE{Alt1995,
+  AUTHOR       = {Alt, Martin and Martin, Florian},
+  TITLE        = {Generation of Efficient Interprocedural Analyzers with {PAG}},
+  BOOKTITLE    = {SAS'95, Static Analysis Symposium},
+  YEAR         = {1995},
+  EDITOR       = {Mycroft, Alan},
+  PAGES        = {33--50},
+  MONTH        = sep,
+  PUBLISHER    = {Springer}
+}
+
+%% INBOOK - Uma parte de um livro, que pode ser um capítulo e/ou um intervalo de páginas.
+%%   - Campos requeridos: AUTHOR ou EDITOR, TITLE, CHAPTER ou PAGES, PUBLISHER e YEAR.
+%%   - Campos opcionais: VOLUME ou NUMBER, SERIES, TYPE, ADDRESS, EDITION, MONTH, NOTE.
+
+@BOOK{Santos2000,
+  AUTHOR    = {Santos, Euripedes P. and von Zuben, Fernando J.},
+  TITLE     = {Recurrent Neural Networks},
+  CHAPTER   = {3},
+  PAGES     = {47--75},
+  PUBLISHER = {CRC Press},
+  YEAR      = {2000},
+  VOLUME    = {13},
+  ADDRESS   = {USA},
+  SERIES    = {International Series on Computational Intelligence},
+  SUBTITLE  = {design, applications}
+}
+
+%% INCOLLECTION - Uma parte de um livro com o seu próprio título.
+%%   - Campos requeridos: AUTHOR, TITLE, BOOKTITLE, PUBLISHER e YEAR.
+%%   - Campos opcionais: EDITOR, VOLUME OR NUMBER, SERIES, TYPE, CHAPTER, PAGES, ADDRESS, EDITION, MONTH e NOTE.
+
+@INCOLLECTION{Pinto2000,
+  AUTHOR    = {Pinto, Alexandre S. and Faina, Luis F. and Cardozo, Eleri},
+  TITLE     = {A {TINA}-Based Distributed Environment for Mobile Multimedia Applications},
+  BOOKTITLE = {Managing QoS in Multimedia Networks, Services},
+  PUBLISHER = {Kluwer Academic Publishers},
+  YEAR      = {2000},
+  EDITOR    = {de Souza, Jos{\'e} Neuman and Boutaba, Raouf},
+  PAGES     = {163--175}
+}
+
+%% INPROCEEDINGS - Um artigo nos anais de uma conferência.
+%%   - Campos requeridos: AUTHOR, TITLE, BOOKTITLE e YEAR.
+%%   - Campos opcionais: EDITOR, VOLUME ou NUMBER, SERIES, PAGES, ADDRESS, MONTH, ORGANIZATION, PUBLISHER e NOTE.
+
+@INPROCEEDINGS{Faina2001,
+  AUTHOR       = {Faina, Luis F. and Pinto, Rossano P. and Guimar{\~a}es, Eliane G. and Cardozo, Eleri},
+  TITLE        = {Mobile Agents for Supporting Ubiquity in Telecommunication Services},
+  BOOKTITLE    = {Second Latin American Network Operation, Management Symposium (LANOMS)},
+  YEAR         = {2001},
+  EDITOR       = {Loureiro, A. and Nogueira, J.},
+  PAGES        = {50--61},
+  ADDRESS      = {Belo Horizonte},
+  MONTH        = aug
+}
+
+%% MANUAL - Uma documentação técnica.
+%%   - Campos requeridos: TITLE.
+%%   - Campos opcionais: AUTHOR, ORGANIZATION, ADDRESS, EDITION, MONTH, YEAR e NOTE.
+
+@MANUAL{NBR6024:2012,
+  TITLE         = {{NBR} 6024},
+  AUTHOR        = {{ASSOCIAÇÃO BRASILEIRA DE NORMAS TÉCNICAS}},
+  ORGANIZATION  = {Associação Brasileira de Normas Técnicas},
+  ADDRESS       = {Rio de Janeiro},
+  MONTH         = feb,
+  YEAR          = {2012},
+  DATE-ADDED    = {2012-12-15 21:24:06 +0000},
+  DATE-MODIFIED = {2012-12-15 21:24:28 +0000},
+  ORG-SHORT     = {ABNT},
+  PAGES         = {4},
+  SUBTITLE      = {numeração progressiva das seções de um documento}
+}
+
+%% MASTERSTHESIS - Uma dissertação de mestrado.
+%%   - Campos requeridos: AUTHOR, TITLE, SCHOOL e YEAR.
+%%   - Campos opcionais: TYPE, ADDRESS, MONTH e NOTE.
+
+@MASTERSTHESIS{SantosFilho2003,
+  AUTHOR  = {Santos, Filho, Jos{\'e} C. S.},
+  TITLE   = {Combinação por Ganho Igual em Ambiente com Desvanecimento Arbitrário},
+  SCHOOL  = {Faculdade de Engenharia Elétrica e de Computação, Universidade Estadual de Campinas},
+  YEAR    = {2003},
+  ADDRESS = {Campinas},
+  MONTH   = aug,
+  PAGES   = {150}
+}
+
+%% MISC - Use esse tipo quando nada mais se encaixa.
+%%   - Campos requeridos: "NENHUM".
+
+
+@MISC{rdStation,
+  TITLE        = {Machine Learning: o que é, para que serve e como funciona},
+    author = {RD Station},
+  HOWPUBLISHED = {RD Station},
+  MONTH        = aug,
+  YEAR         = {2023},
+  URL          = {https://www.rdstation.com/blog/marketing/machine-learning/},
+  URLACCESSDATE = {01 nov. 2024}
+}
+@MISC{rockcontent-1,
+  TITLE        = {O que é KPI e descubra como ele ajuda a medir resultados de marketing},
+    author = {Lucas Gabriel},
+  HOWPUBLISHED = {RockContent},
+  MONTH        = set,
+  YEAR         = {2018},
+  URL          = {https://rockcontent.com/br/blog/kpi/},
+  URLACCESSDATE = {04 nov. 2024}
+}
+
+@MISC{rockcontent-2,
+  TITLE        = {Marketing de Conteúdo: o que é, benefícios e como fazer?},
+    author = {Vitor Peçanha},
+  HOWPUBLISHED = {RockContent},
+  MONTH        = abr,
+  YEAR         = {2020},
+  URL          = {https://rockcontent.com/br/blog/marketing-de-conteudo/},
+  URLACCESSDATE = {04 nov. 2024}
+}
+@MISC{tcacriacaodesites,
+  TITLE        = {Desafios e Solucoes em Campanhas de Trafego Pago},
+    author = {TCA AGÊNCIA DIGITAL},
+  HOWPUBLISHED = {Tcacriacaodesites},
+  MONTH        = feb,
+  YEAR         = {2024},
+  URL          = {https://www.tcacriacaodesites.com.br/desafios-e-solucoes-em-campanhas-de-trafego-pago/},
+  URLACCESSDATE = {04 nov. 2024}
+}
+%% PHDTHESIS - Uma tese de doutorado.
+%%   - Campos requeridos: AUTHOR, TITLE, SCHOOL e YEAR.
+%%   - Campos opcionais: TYPE, ADDRESS, MONTH e NOTE.
+
+@PHDTHESIS{Faina2000,
+  AUTHOR  = {Faina, Luis F.},
+  TITLE   = {Uma Arquitetura para Suporte à Ubiquidade dos Serviços de Telecomunicações Baseada na Arquitetura {TINA} e em Agentes Móveis},
+  SCHOOL  = {Faculdade de Engenharia Elétrica e de Computação, Universidade Estadual de Campinas},
+  YEAR    = {2000},
+  ADDRESS = {Campinas},
+  MONTH   = dec,
+  PAGES   = {150}
+}
+
+%% PROCEEDINGS - As deliberações de uma conferência.
+%%   - Campos requeridos: TITLE e YEAR.
+%%   - Campos opcionais: EDITOR, VOLUME ou NUMBER, SERIES, ADDRESS, MONTH, ORGANIZATION, PUBLISHER e NOTE.
+
+@PROCEEDINGS{Pirmez2002,
+  TITLE        = {{Anais do XX Simpósio Brasileiro de Redes de Computadores}},
+  YEAR         = {2002},
+  EDITOR       = {Pirmez, Luci and Carmo, Luis Fernando and Mac{\^e}do, Raimundo Jos{\'e}},
+  ADDRESS      = {Rio de Janeiro},
+  MONTH        = may,
+  ORGANIZATION = {Sociedade Brasileira de Computação},
+  PUBLISHER    = {Núcleo de Computação Eletrônica da UFRJ}
+}
+
+%% TECHREPORT - Um relatório publicado por uma escola ou uma outra instituição, geralmente dentro de uma série numerada.
+%%   - Campos requeridos: AUTHOR, TITLE, INSTITUTION e YEAR.
+%%   - Campos opcionais: TYPE, NUMBER, ADDRESS, MONTH e NOTE.
+
+@TECHREPORT{OMG2000,
+  AUTHOR      = {{OMG}},
+  TITLE       = {Audio/Video Streams, Version 1.0},
+  INSTITUTION = {Object Management Group (OMG)},
+  YEAR        = {2000},
+  TYPE        = {OMG Specification},
+  ADDRESS     = {Massachusetts, USA},
+  MONTH       = jan,
+  NOTE        = {formal/2000-01-03},
+  URL         = {http://www.omg.org/},
+  URLACCESSDATE = {21 ago. 2013}
+}
+
+%% UNPUBLISHED - Um documento com um autor e um título, mas não publicado formalmente.
+%%   - Campos requeridos: AUTHOR, TITLE e NOTE.
+%%   - Campos opcionais: MONTH e YEAR.
+
+@UNPUBLISHED{Sichman2002,
+  AUTHOR = {Sichman, Jaime S.},
+  TITLE  = {Sobre Agentes Móveis e Fixos},
+  NOTE   = {Comunicação pessoal por e-mail},
+  MONTH  = mar,
+  YEAR   = {2002}
+}
+
+%% CAMPOS
+%%
+%% Os tipos de entradas bibliográficas contém alguns subconjuntos padrões de entradas de dados:
+%%   - ADDRESS: Endereço da editora (normalmente, apenas a cidade, mas pode ser o endereço completo para editoras menos conhecidas).
+%%   - ANNOTE: Uma anotação para estilos bibliográficos adotados (não típico).
+%%   - AUTHOR: O(s) nome(s) do(s) autor(es) (no caso de haver mais de um autor, separá-los por "and").
+%%   - BOOKTITLE: O título do livro, mesmo que apenas parte dele esteja sendo citado.
+%%   - CHAPTER: O número do capítulo.
+%%   - CROSSREF: A chave de entrada da referência cruzada.
+%%   - EDITION: A edição de um livro, forma longa (como o "primeiro" ou "segundo").
+%%   - EDITOR: O(s) nome(s) do(s) editor(es).
+%%   - EPRINT: A especificação de uma publicação eletrônica, muitas vezes um "preprint" ou um relatório técnico.
+%%   - HOWPUBLISHED: Como ele foi publicado, se o método de publicação não é típico.
+%%   - INSTITUTION: A instituição que esteve envolvida na publicação, mas não é necessariamente a editora.
+%%   - JOURNAL: O jornal ou a revista onde o trabalho foi publicado.
+%%   - KEY: Um campo oculto utilizado para especificar ou colocar em ordem alfabética as entradas (quando o campos "autor" e
+%%     "editor" estão em falta). Note que isto é muito diferente da chave (mencionados apenas após esta lista) que é usado para
+%%     citar ou fazer uma referência cruzada à entrada.
+%%   - MONTH: O mês de publicação (ou, se não publicado, no mês de criação).
+%%   - NOTE: Diversas informações extras.
+%%   - NUMBER: O "número" de um jornal, uma revista, ou um relatório técnico, se aplicável. (A maioria das publicações tem um campo
+%%     "volume", mas não o campo "número").
+%%   - ORGANIZATION: A organização patrocinadora.
+%%   - PAGES: números de página, separados por vírgulas ou hifens duplo. Para os livros, o número total de páginas.
+%%   - PUBLISHER: O nome da editora.
+%%   - SCHOOL: A escola onde a tese ou dissertação foi escrita.
+%%   - SERIES: A série de livros onde foi publicado em (por exemplo: "A Hardy Boys" ou "Lecture Notes in Computer Science").
+%%   - TITLE: o título do trabalho.
+%%   - TYPE: O tipo de relatório técnico, por exemplo, "Nota de Investigação".
+%%   - URL: O endereço da web.
+%%   - VOLUME: O volume de uma revista ou de um livro com vários volumes.
+%%   - YEAR: O ano de publicação (ou, se não publicado, o ano de criação).
+%%
+%% Além disto, cada entrada contém uma chave (rótulo) que é usada para citar ou uma entrada de referência cruzada. Esta chave é o
+%% primeiro item em uma entrada BibTeX, e não faz parte de qualquer domínio.
+
+@MISC{MiniterioSaude2025,
+  TITLE        = {Conheça as práticas para reduzir o comportamento sedentário disponíveis no SUS},
+    author = {Brasil, Ministério da Saude},
+  HOWPUBLISHED = {Mais Saúde},
+  MONTH        = mar,
+  YEAR         = {2025},
+  URL          = {https://www.gov.br/saude/pt-br/assuntos/noticias/2025/marco/conheca-as-praticas-para-reduzir-o-comportamento-sedentario-disponiveis-no-sus},
+  URLACCESSDATE = {01 mar. 2025}
+}
+
+@article{oliveira2023perfil,
+  title={Perfil de atividade f{\'\i}sica no tempo livre e tempo sedent{\'a}rio em adultos no Brasil: inqu{\'e}rito nacional, 2019},
+  author={Oliveira, Ar{\~a}o Belitardo de and Katzmarzyk, Peter T and Dantas, Wagner Silva and Bense{\~n}or, Isabela Judith Martins and Goulart, Alessandra de Carvalho and Ekelund, Ulf},
+  journal={Epidemiologia e Servi{\c{c}}os de Sa{\'u}de},
+  volume={32},
+  pages={e2023168},
+  year={2023},
+  publisher={SciELO Brasil}
+}
+
+@MISC{Vigitel2023,
+  TITLE        = {Infográfico Vigitel 2006-2023: prática de atividade física},
+    author = {Brasil, Ministério da Saude},
+  HOWPUBLISHED = {Vigilância em Saúde},
+  MONTH        = fev,
+  YEAR         = {2024},
+  URL          = {https://www.gov.br/saude/pt-br/centrais-de-conteudo/publicacoes/svsa/vigitel/infografico-vigitel-2006-2023-pratica-de-atividade-fisica/view},
+  URLACCESSDATE = {07 abr. 2025}
+}
+
+@article{meira2018qualidade,
+  title={Qualidade de software na vis{\~a}o do usu{\'a}rio: um estudo com aplicativos que apoiam corrida de rua},
+  author={Meira, Leonardo Carloni Rodrigues and Pires, Daniel Facciolo},
+  journal={Revista Eletr{\^o}nica de Sistemas de Informa{\c{c}}{\~a}o e Gest{\~a}o Tecnol{\'o}gica},
+  volume={9},
+  number={3},
+  year={2018}
+}
+
+@misc{ibge2021instituto,
+  title={Instituto Brasileiro de Geografia e Estat{\'\i}stica: Pesquisa Nacional por Amostra de Domic{\'\i}lios},
+  author={IBGE},
+  year={2021},
+}
+
+@MISC{OPAS2025,
+  TITLE        = {Por que a atividade física é importante?},
+  author = {Organização Pan-Americana da Saúde},
+  HOWPUBLISHED = {Atividade Física},
+  YEAR         = {2025},
+  URL          = {https://www.paho.org/pt/topicos/atividade-fisica#:~:text=O%20novo%20Plano%20de%20A%C3%A7%C3%A3o,impactos%20negativos%20ao%20meio%20ambiente.},
+  URLACCESSDATE = {10 abr. 2025}
+}
+
+@article{PARDOS-MAINER2021,
+   title = {{Obesidad, intervenci\~A\textthreesuperiorn escolar, actividad f\~A\-sica y estilos de vida saludable en ni\~A\pmos espa\~A\pmoles}},
+   journal = {{Revista Cubana de Salud P\~A\textordmasculineblica}},
+   author={Pardos-Mainer, Elena AND Gou-Forcada, Borja AND Sagarra-Romero, Luc\~A\-a AND Calero Morales, Santiago AND Fern\~A!`ndez Concepci\~A\textthreesuperiorn, Ra\~A\textordmasculinel Ricardo},
+   ISSN = {0864-3466},
+   language = {es},
+   URL = {http://scielo.sld.cu/scielo.php?script=sci_arttext&pid=S0864-34662021000200017&nrm=iso},
+   volume = {47},
+   year = {2021},
+   month = {06},
+   publisher = {scielocu},
+   }
+
+@ARTICLE{Gavalas,
+  author={Gavalas, Damianos and Economou, Daphne},
+  journal={IEEE Software}, 
+  title={Development Platforms for Mobile Applications: Status and Trends}, 
+  year={2011},
+  volume={28},
+  number={1},
+  pages={77-86},
+  keywords={Java;Mobile communication;Mobile handsets;Runtime;Smart phones;Multimedia communication;mobile devices;mobile applications;development platforms;Java ME;Flash Lite;.NET Compact Framework;Android},
+  doi={10.1109/MS.2010.155}}
+
+@INPROCEEDINGS{Gadhiya,
+  author={Gadhiya, S.A. and Wandra, K.H. and Vaghela, V.B.},
+  booktitle={2012 IEEE International Conference on Engineering Education: Innovative Practices and Future Trends (AICERA)}, 
+  title={Role of mobile augmentation in mobile application development}, 
+  year={2012},
+  volume={},
+  number={},
+  pages={1-5},
+  keywords={Mobile communication;Mobile computing;Wireless communication;Java;Streaming media;Smart phones;Mobile Computing;Mobile Application Development;Mobile Augmentation;Integrate Technology},
+  doi={10.1109/AICERA.2012.6306700}
+}
+
+@article{albuquerque2018corrida,
+  title={Corrida de rua: uma an{\'a}lise qualitativa dos aspectos que motivam sua pr{\'a}tica},
+  author={Albuquerque, Diogo B and Silva, Maritza Lordsleem and de Miranda, Yves HB and de Freitas, Clara MSM},
+  journal={Rev. bras. ci{\^e}nc. mov},
+  pages={88--95},
+  year={2018}
+}
+
+
+
+@article{demetrio2018utilizaccao,
+  title={A utiliza{\c{c}}{\~a}o de aplicativo de corrida como fator motivacional da pr{\'a}tica na educa{\c{c}}{\~a}o f{\'\i}sica escolar},
+  author={Demetrio, Marcos da Silva},
+  year={2018}
+}
+
+@article{billat2001physical,
+  title={Physical and training characteristics of top-class marathon runners},
+  author={Billat, VERONIQUE L and Demarle, ALEXANDRE and Slawinski, JEAN and Paiva, MARIO and Koralsztein, JEAN-PIERRE},
+  journal={Medicine and science in sports and exercise},
+  volume={33},
+  number={12},
+  pages={2089--2097},
+  year={2001},
+  publisher={WILLIAMS \& WILKINS}
+}
+
+@article{sauer2018impacto,
+  title={O impacto da pr{\'a}tica da corrida no comportamento de consumo dos corredores amadores},
+  author={Sauer, Lu{\'\i}s Ernesto Calvi},
+  year={2018}
+}
+
+@article{santos2018corrida,
+  title={Corrida de rua: esporte, divers{\~a}o e consumo. An{\'a}lise das campanhas publicit{\'a}rias" It's Runderful" da Mizuno e" Vem Junto" da Nike},
+  author={Santos, Mikael Corr{\^e}a},
+  year={2018},
+  publisher={Universidade Estadual Paulista (Unesp)}
+}
+
+@misc{usoTI2024,
+  TITLE        = {Pesquisa do Uso da TI - Tecnologia de Informação nas Empresas},
+  author = {Fernando S. Meire},
+  HOWPUBLISHED = {35ª Edição Anual, FGVcia, 2024 },
+  MONTH        = mai,
+  YEAR         = {2025},
+  URL          = {https://eaesp.fgv.br/producao-intelectual/pesquisa-anual-uso-ti},
+  URLACCESSDATE = {14 mai. 2025}
+}
+
+@article{sommerville2011engenharia,
+  title={Engenharia de software, 9a},
+  author={Sommerville, Ian},
+  journal={S{\~a}o Palo, SP, Brasil},
+  pages={63},
+  year={2011}
+}
+
+@misc{nutritotalmets,
+  title = {Tabela de METs},
+  author = {Ciudi, Roberta},
+  howpublished = {\url{https://nutritotal.com.br/pro/tabela-de-mets/}},
+  note = {Acesso em: 2 jun. 2025},
+  year = {2025}
+}
+
+%% Referências para TCC sobre Pipeline Optimizer
+
+@book{aggarwal2017outlier,
+  title={Outlier Analysis},
+  author={Aggarwal, Charu C.},
+  edition={2},
+  publisher={Springer},
+  year={2017},
+  address={New York, NY}
+}
+
+@article{chandola2009anomaly,
+  title={Anomaly Detection: A Survey},
+  author={Chandola, Varun and Banerjee, Arindam and Kumar, Vipin},
+  journal={ACM Computing Surveys},
+  volume={41},
+  number={3},
+  pages={15:1--15:58},
+  year={2009},
+  publisher={ACM}
+}
+
+@article{guidotti2018survey,
+  title={A Survey of Methods for Explaining Black Box Models},
+  author={Guidotti, Riccardo and Monreale, Anna and Ruggieri, Salvatore and Turini, Franco and Giannotti, Fosca and Pedreschi, Dino},
+  journal={ACM Computing Surveys},
+  volume={51},
+  number={5},
+  pages={93:1--93:42},
+  year={2018},
+  publisher={ACM}
+}
+
+@book{kim2016devops,
+  title={The DevOps Handbook: How to Create World-Class Agility, Reliability, and Security in Technology Organizations},
+  author={Kim, Gene and Humble, Jez and Debois, Patrick and Willis, John},
+  publisher={IT Revolution},
+  year={2016},
+  address={Portland, OR}
+}
+
+@book{kuhn2013applied,
+  title={Applied Predictive Modeling},
+  author={Kuhn, Max and Johnson, Kjell},
+  publisher={Springer},
+  year={2013},
+  address={New York, NY}
+}
+
+@inproceedings{liu2008isolation,
+  title={Isolation Forest},
+  author={Liu, Fei Tony and Ting, Kai Ming and Zhou, Zhi-Hua},
+  booktitle={2008 Eighth IEEE International Conference on Data Mining},
+  pages={413--422},
+  year={2008},
+  organization={IEEE}
+}
+
+@article{macqueen1967some,
+  title={Some methods for classification and analysis of multivariate observations},
+  author={MacQueen, James},
+  journal={Proceedings of the fifth Berkeley symposium on mathematical statistics and probability},
+  volume={1},
+  number={14},
+  pages={281--297},
+  year={1967},
+  publisher={University of California Press}
+}
+
+@misc{gitlabapi,
+  title={GitLab API Documentation},
+  author={{GitLab Inc.}},
+  howpublished={\url{https://docs.gitlab.com/ee/api/}},
+  note={Acesso em: jan. 2025},
+  year={2025},
+  url={https://docs.gitlab.com/ee/api/}
+}
+
+%% Referências adicionais para TCC sobre Pipeline Optimizer
+
+@book{gamma1995design,
+  title={Design Patterns: Elements of Reusable Object-Oriented Software},
+  author={Gamma, Erich and Helm, Richard and Johnson, Ralph and Vlissides, John},
+  publisher={Addison-Wesley Professional},
+  year={1995},
+  address={Boston, MA}
+}
+
+@book{allspaw2009devops,
+  title={The Visible Ops Handbook: Starting ITIL in 4 Practical Steps},
+  author={Allspaw, John and Kim, Gene},
+  publisher={IT Process Institute},
+  year={2009}
+}
+
+@book{humble2010continuous,
+  title={Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation},
+  author={Humble, Jez and Farley, David},
+  publisher={Addison-Wesley Professional},
+  year={2010},
+  address={Boston, MA}
+}
+
+@book{bass2015devops,
+  title={DevOps: A Software Architect's Perspective},
+  author={Bass, Len and Weber, Ingo and Zhu, Liming},
+  publisher={Addison-Wesley Professional},
+  year={2015},
+  address={Boston, MA}
+}
+
+@inproceedings{breck2017mlops,
+  title={The ML Test Score: A Rubric for ML Production Readiness and Technical Debt Reduction},
+  author={Breck, Eric and Cai, Shanqing and Nielsen, Eric and Salib, Michael and Sculley, D.},
+  booktitle={2017 IEEE International Conference on Big Data (Big Data)},
+  pages={1123--1132},
+  year={2017},
+  organization={IEEE}
+}
+
+@inproceedings{sculley2015hidden,
+  title={Hidden Technical Debt in Machine Learning Systems},
+  author={Sculley, D. and Holt, Gary and Golovin, Daniel and Davydov, Eugene and Phillips, Todd and Ebner, Dietmar and Chaudhary, Vinay and Young, Michael and Crespo, Jean-Francois and Dennison, Dan},
+  booktitle={Advances in Neural Information Processing Systems},
+  volume={28},
+  year={2015},
+  pages={2503--2511}
+}
+
+@inproceedings{he2017feature,
+  title={Feature Store: A Data Platform for Machine Learning},
+  author={He, Yifei and Zhao, Jun and Li, Jin and Wang, Yiming and Chen, Wei and Li, Xiaoyong},
+  booktitle={2020 IEEE International Conference on Big Data (Big Data)},
+  pages={3828--3837},
+  year={2020},
+  organization={IEEE},
+  address={Atlanta, GA}
+}
+
+@book{hopcroft2011introduction,
+  title={Introduction to Automata Theory, Languages, and Computation},
+  author={Hopcroft, John E. and Motwani, Rajeev and Ullman, Jeffrey D.},
+  publisher={Pearson Education},
+  edition={3},
+  year={2011},
+  address={Boston, MA}
+}
+
+@book{kleppmann2017designing,
+  title={Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems},
+  author={Kleppmann, Martin},
+  publisher={O'Reilly Media},
+  year={2017},
+  address={Sebastopol, CA}
+}
+
+@inproceedings{stonebraker2005one,
+  title={One Size Fits All: An Idea Whose Time Has Come and Gone},
+  author={Stonebraker, Michael and Çetintemel, Uğur and Zdonik, Stan},
+  booktitle={21st International Conference on Data Engineering (ICDE'05)},
+  pages={2--11},
+  year={2005},
+  organization={IEEE}
+}
+
+@article{armbrust2021lakehouse,
+  title={Lakehouse: A New Generation of Open Platforms that Unify Data Warehousing and Advanced Analytics},
+  author={Armbrust, Michael and Ghodsi, Ali and Xin, Reynold and Zaharia, Matei},
+  journal={CIDR},
+  year={2021}
+}
+
+@inproceedings{he2017featurestore,
+  title={Feast: An Open-Source Feature Store for Machine Learning},
+  author={He, Willem Pienaar and Kulkarni, Mani and Nair, Saurabh and Qiao, Lei and Chinchali, Sandeep and Apurva, Sam and Chintapalli, Karthik and Bozarth, Derek and Simoff, Gio and Ispir, Mustafa and others},
+  booktitle={SysML},
+  year={2020}
+}
+
+@article{adadi2018explaining,
+  title={Explaining Deep Neural Networks: A Survey on the Global Interpretation Methods},
+  author={Adadi, Amina and Berrada, Mohammed},
+  journal={Neurocomputing},
+  volume={325},
+  pages={165--180},
+  year={2018},
+  publisher={Elsevier}
+}
+
+@inproceedings{ribeiro2016should,
+  title={"Why Should I Trust You?": Explaining the Predictions of Any Classifier},
+  author={Ribeiro, Marco Tulio and Singh, Sameer and Guestrin, Carlos},
+  booktitle={Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining},
+  pages={1135--1144},
+  year={2016}
+}
+
+@article{lundberg2017unified,
+  title={A Unified Approach to Interpreting Model Predictions},
+  author={Lundberg, Scott M. and Lee, Su-In},
+  journal={Advances in Neural Information Processing Systems},
+  volume={30},
+  year={2017}
+}
+
+@inproceedings{liu2012isolation,
+  title={Isolation-Based Anomaly Detection},
+  author={Liu, Fei Tony and Ting, Kai Ming and Zhou, Zhi-Hua},
+  journal={ACM Transactions on Knowledge Discovery from Data (TKDD)},
+  volume={6},
+  number={1},
+  pages={1--39},
+  year={2012}
+}
+
+@article{schubert2012dbscan,
+  title={DBSCAN Revisited, Revisited: Why and How You Should (Still) Use DBSCAN},
+  author={Schubert, Erich and Sander, Jörg and Ester, Martin and Kriegel, Hans Peter and Xu, Xiaowei},
+  journal={ACM Transactions on Database Systems (TODS)},
+  volume={42},
+  number={3},
+  pages={1--21},
+  year={2017}
+}
+
+@book{han2011data,
+  title={Data Mining: Concepts and Techniques},
+  author={Han, Jiawei and Kamber, Micheline and Pei, Jian},
+  edition={3},
+  publisher={Morgan Kaufmann},
+  year={2011},
+  address={Waltham, MA}
+}
+
+@article{aggarwal2013outlier,
+  title={Outlier Detection for High Dimensional Data},
+  author={Aggarwal, Charu C. and Yu, Philip S.},
+  journal={ACM Sigmod Record},
+  volume={30},
+  number={2},
+  pages={37--46},
+  year={2001}
+}
+
+@article{chandola2007anomaly,
+  title={Anomaly Detection: A Survey},
+  author={Chandola, Varun and Banerjee, Arindam and Kumar, Vipin},
+  journal={ACM Computing Surveys},
+  volume={41},
+  number={3},
+  pages={15:1--15:58},
+  year={2009}
+}
+
+@article{rousseeuw1987silhouettes,
+  title={Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster Analysis},
+  author={Rousseeuw, Peter J.},
+  journal={Journal of Computational and Applied Mathematics},
+  volume={20},
+  pages={53--65},
+  year={1987},
+  publisher={Elsevier}
+}
+
+@misc{postgresql2024,
+  title={PostgreSQL: The World's Most Advanced Open Source Relational Database},
+  author={{PostgreSQL Global Development Group}},
+  howpublished={\url{https://www.postgresql.org/}},
+  note={Acesso em: jan. 2025},
+  year={2024},
+  url={https://www.postgresql.org/}
+}
+
+@misc{fastapi2024,
+  title={FastAPI: Modern, Fast Web Framework for Building APIs},
+  author={{FastAPI}},
+  howpublished={\url{https://fastapi.tiangolo.com/}},
+  note={Acesso em: jan. 2025},
+  year={2024},
+  url={https://fastapi.tiangolo.com/}
+}
+
+@misc{streamlit2024,
+  title={Streamlit: The Fastest Way to Build and Share Data Apps},
+  author={{Streamlit}},
+  howpublished={\url{https://streamlit.io/}},
+  note={Acesso em: jan. 2025},
+  year={2024},
+  url={https://streamlit.io/}
+}
+
+@article{pedregosa2011scikit,
+  title={Scikit-learn: Machine Learning in Python},
+  author={Pedregosa, Fabian and Varoquaux, Gaël and Gramfort, Alexandre and Michel, Vincent and Thirion, Bertrand and Grisel, Olivier and Blondel, Mathieu and Prettenhofer, Peter and Weiss, Ron and Dubourg, Vincent and others},
+  journal={Journal of Machine Learning Research},
+  volume={12},
+  pages={2825--2830},
+  year={2011},
+  url={https://jmlr.org/papers/v12/pedregosa11a.html}
+}
+
+@inproceedings{chen2016xgboost,
+  title={Xgboost: A Scalable Tree Boosting System},
+  author={Chen, Tianqi and Guestrin, Carlos},
+  booktitle={Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining},
+  pages={785--794},
+  year={2016}
+}
+
+@article{hochreiter1997long,
+  title={Long Short-Term Memory},
+  author={Hochreiter, Sepp and Schmidhuber, Jürgen},
+  journal={Neural Computation},
+  volume={9},
+  number={8},
+  pages={1735--1780},
+  year={1997},
+  publisher={MIT Press}
+}
+
+@inproceedings{kim2016continuous,
+  title={Continuous Delivery and DevOps: A Quickstart Guide},
+  author={Kim, Gene and Humble, Jez and Debois, Patrick and Willis, John},
+  booktitle={IT Revolution},
+  year={2016}
+}
+
+@article{allspaw2009web,
+  title={Web Operations: Keeping the Data on Time},
+  author={Allspaw, John and Robbins, Jesse},
+  journal={O'Reilly Media},
+  year={2009}
+}
+
+@inproceedings{chen2015continuous,
+  title={Continuous Delivery: Overcoming Adoption Challenges},
+  author={Chen, Lianping},
+  booktitle={2015 IEEE/ACM 37th IEEE International Conference on Software Engineering},
+  volume={2},
+  pages={273--282},
+  year={2015},
+  organization={IEEE}
+}
+
+@article{shahin2017continuous,
+  title={Continuous Integration, Delivery and Deployment: A Systematic Review on Approaches, Tools, Challenges and Practices},
+  author={Shahin, Mojtaba and Ali Babar, Muhammad and Zhu, Liming},
+  journal={IEEE Access},
+  volume={5},
+  pages={3909--3943},
+  year={2017},
+  publisher={IEEE}
+}
+
+@inproceedings{leite2019survey,
+  title={A Survey of DevOps Concepts and Challenges},
+  author={Leite, Leonardo and Rocha, Carla and Kon, Fabio and Milojicic, Dejan and Meirelles, Paulo},
+  booktitle={ACM Computing Surveys},
+  volume={52},
+  number={6},
+  pages={1--35},
+  year={2019}
+}
+
+@article{dyck2017release,
+  title={Release Practices for Software Reuse},
+  author={Dyck, Andreas and Lichter, Horst and Lüdemann, Alexander},
+  journal={IEEE Software},
+  volume={34},
+  number={5},
+  pages={56--63},
+  year={2017},
+  publisher={IEEE}
+}
+
+@inproceedings{luo2015software,
+  title={Software Reliability Prediction: A Survey},
+  author={Luo, Ling and Kocaguneli, Ekrem and Menzies, Tim},
+  booktitle={2015 IEEE/ACM 37th IEEE International Conference on Software Engineering},
+  volume={2},
+  pages={283--292},
+  year={2015},
+  organization={IEEE}
+}
+
+@article{hindle2012green,
+  title={Green Mining: A Methodology of Relating Software Change to Power Consumption},
+  author={Hindle, Abram and Wilson, Abram and Rasmussen, Kent and Barlow, Edward J. and Campbell, John Charles and Romansky, Stephen},
+  journal={Empirical Software Engineering},
+  volume={17},
+  number={4},
+  pages={421--457},
+  year={2012},
+  publisher={Springer}
+}
+
+@inproceedings{menzies2017fair,
+  title={Fair: A Framework for Understanding and Mitigating Algorithmic Bias},
+  author={Menzies, Tim and Krishna, Rahul and Pryor, David},
+  booktitle={2017 IEEE/ACM 39th International Conference on Software Engineering: Software Engineering in Practice Track (ICSE-SEIP)},
+  pages={113--122},
+  year={2017},
+  organization={IEEE}
+}
+
+@article{zhang2019continuous,
+  title={Continuous Integration and Continuous Delivery: A Systematic Review},
+  author={Zhang, He and Li, Jingyue and Zhu, Liming and Jeffery, Ross and Wang, Qing and Li, Mingshu},
+  journal={ACM Computing Surveys},
+  volume={52},
+  number={5},
+  pages={1--45},
+  year={2019}
+}
+
+@inproceedings{clayton2015watermark,
+  title={Watermark-Based Data Lineage in Distributed Systems},
+  author={Clayton, David and Seltzer, Margo},
+  booktitle={Proceedings of the 2015 ACM SIGMOD International Conference on Management of Data},
+  pages={1873--1887},
+  year={2015}
+}
+
+@article{armbrust2020delta,
+  title={Delta Lake: High-Performance ACID Table Storage over Cloud Object Stores},
+  author={Armbrust, Michael and Das, Tathagata and Sun, Liwen and Yavuz, Burak and Zhu, Shixiong and Murthy, Mukul and Torres, Murthy and Torres, Jon and van Hovell, Herman and Ionescu, Adrian and others},
+  journal={Proceedings of the VLDB Endowment},
+  volume={13},
+  number={12},
+  pages={3411--3424},
+  year={2020}
+}
+
+@book{kim2018accelerate,
+  title={Accelerate: The Science of Lean Software and DevOps: Building and Scaling High Performing Technology Organizations},
+  author={Kim, Gene and Humble, Jez and Debois, Patrick and Willis, John and Allspaw, John},
+  publisher={IT Revolution},
+  year={2018},
+  address={Portland, OR}
+}
+
+@article{arpteg2018software,
+  title={Software Engineering Challenges of Deep Learning},
+  author={Arpteg, Anders and Brinne, Björn and Crnkovic, Ivica and Bosch, Jan},
+  journal={2018 44th Euromicro Conference on Software Engineering and Advanced Applications (SEAA)},
+  pages={50--59},
+  year={2018},
+  publisher={IEEE}
+}
+
+@inproceedings{wang2019empirical,
+  title={An Empirical Study on the Impact of CI/CD on Software Quality},
+  author={Wang, Di and Li, Jingyue and Wang, Qing and Li, Mingshu},
+  booktitle={2019 IEEE/ACM 41st International Conference on Software Engineering: Software Engineering in Practice (ICSE-SEIP)},
+  pages={11--20},
+  year={2019},
+  organization={IEEE}
+}
+
+@misc{tobecontinuous2024,
+  title={Node.js CI/CD Catalog - GitLab CI/CD Template},
+  author={{To Be Continuous}},
+  howpublished={\url{https://gitlab.com/to-be-continuous/node}},
+  note={Acesso em: jan. 2025},
+  year={2024},
+  url={https://gitlab.com/to-be-continuous/node}
+}
+
+@article{breiman2001random,
+  title={Random Forests},
+  author={Breiman, Leo},
+  journal={Machine Learning},
+  volume={45},
+  number={1},
+  pages={5--32},
+  year={2001},
+  publisher={Springer}
+}
+
+@book{bishop2006pattern,
+  title={Pattern Recognition and Machine Learning},
+  author={Bishop, Christopher M.},
+  publisher={Springer},
+  year={2006},
+  address={New York, NY}
+}
+
+@article{goodfellow2016deep,
+  title={Deep Learning},
+  author={Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
+  journal={MIT Press},
+  year={2016}
+}
+
+@inproceedings{domingos2012few,
+  title={A Few Useful Things to Know About Machine Learning},
+  author={Domingos, Pedro},
+  booktitle={Communications of the ACM},
+  volume={55},
+  number={10},
+  pages={78--87},
+  year={2012}
+}
+
+@article{box1976science,
+  title={Science and Statistics},
+  author={Box, George E. P.},
+  journal={Journal of the American Statistical Association},
+  volume={71},
+  number={356},
+  pages={791--799},
+  year={1976},
+  publisher={Taylor \& Francis}
+}
+
+@book{tukey1977exploratory,
+  title={Exploratory Data Analysis},
+  author={Tukey, John W.},
+  publisher={Addison-Wesley},
+  year={1977},
+  address={Reading, MA}
+}
+
+@article{pearson1901lines,
+  title={On Lines and Planes of Closest Fit to Systems of Points in Space},
+  author={Pearson, Karl},
+  journal={Philosophical Magazine},
+  volume={2},
+  number={11},
+  pages={559--572},
+  year={1901}
+}
+
+@inproceedings{arthur2007kmeans,
+  title={K-Means++: The Advantages of Careful Seeding},
+  author={Arthur, David and Vassilvitskii, Sergei},
+  booktitle={Proceedings of the Eighteenth Annual ACM-SIAM Symposium on Discrete Algorithms},
+  pages={1027--1035},
+  year={2007}
+}
+
+@article{elkan2003using,
+  title={Using the Triangle Inequality to Accelerate K-Means},
+  author={Elkan, Charles},
+  journal={Proceedings of the 20th International Conference on Machine Learning (ICML)},
+  pages={147--153},
+  year={2003}
+}
+
+@book{tan2006introduction,
+  title={Introduction to Data Mining},
+  author={Tan, Pang-Ning and Steinbach, Michael and Kumar, Vipin},
+  publisher={Pearson Addison Wesley},
+  year={2006},
+  address={Boston, MA}
+}
+
+@article{shannon1948mathematical,
+  title={A Mathematical Theory of Communication},
+  author={Shannon, Claude E.},
+  journal={Bell System Technical Journal},
+  volume={27},
+  number={3},
+  pages={379--423},
+  year={1948}
+}
+
+@inproceedings{chen2018neural,
+  title={Neural Collaborative Filtering},
+  author={He, Xiangnan and Liao, Lizi and Zhang, Hanwang and Nie, Liqiang and Hu, Xiaohu and Chua, Tat-Seng},
+  booktitle={Proceedings of the 26th International Conference on World Wide Web},
+  pages={173--182},
+  year={2017}
+}
+
+@article{lecun2015deep,
+  title={Deep Learning},
+  author={LeCun, Yann and Bengio, Yoshua and Hinton, Geoffrey},
+  journal={Nature},
+  volume={521},
+  number={7553},
+  pages={436--444},
+  year={2015},
+  publisher={Nature Publishing Group}
+}
+
+@inproceedings{hochreiter1991untersuchungen,
+  title={Untersuchungen zu dynamischen neuronalen Netzen},
+  author={Hochreiter, Sepp},
+  booktitle={Diplomarbeit, Technische Universität München},
+  year={1991}
+}
+
+@article{rumelhart1986learning,
+  title={Learning Representations by Back-Propagating Errors},
+  author={Rumelhart, David E. and Hinton, Geoffrey E. and Williams, Ronald J.},
+  journal={Nature},
+  volume={323},
+  number={6088},
+  pages={533--536},
+  year={1986},
+  publisher={Nature Publishing Group}
+}
+
+@book{mitchell1997machine,
+  title={Machine Learning},
+  author={Mitchell, Tom M.},
+  publisher={McGraw-Hill},
+  year={1997},
+  address={New York, NY}
+}
+
+@article{vapnik1995nature,
+  title={The Nature of Statistical Learning Theory},
+  author={Vapnik, Vladimir N.},
+  journal={Springer-Verlag},
+  year={1995}
+}
+
+@inproceedings{quinlan1986induction,
+  title={Induction of Decision Trees},
+  author={Quinlan, J. Ross},
+  journal={Machine Learning},
+  volume={1},
+  number={1},
+  pages={81--106},
+  year={1986}
+}
+
+@article{friedman2001greedy,
+  title={Greedy Function Approximation: A Gradient Boosting Machine},
+  author={Friedman, Jerome H.},
+  journal={Annals of Statistics},
+  volume={29},
+  number={5},
+  pages={1189--1232},
+  year={2001}
+}
+
+@inproceedings{freund1997decision,
+  title={A Decision-Theoretic Generalization of On-Line Learning and an Application to Boosting},
+  author={Freund, Yoav and Schapire, Robert E.},
+  journal={Journal of Computer and System Sciences},
+  volume={55},
+  number={1},
+  pages={119--139},
+  year={1997}
+}
+
+@book{hastie2009elements,
+  title={The Elements of Statistical Learning: Data Mining, Inference, and Prediction},
+  author={Hastie, Trevor and Tibshirani, Robert and Friedman, Jerome},
+  edition={2},
+  publisher={Springer},
+  year={2009},
+  address={New York, NY}
+}
+
+@article{efron1979bootstrap,
+  title={Bootstrap Methods: Another Look at the Jackknife},
+  author={Efron, Bradley},
+  journal={Annals of Statistics},
+  volume={7},
+  number={1},
+  pages={1--26},
+  year={1979}
+}
+
+@inproceedings{stone1974cross,
+  title={Cross-Validatory Choice and Assessment of Statistical Predictions},
+  author={Stone, Mervyn},
+  journal={Journal of the Royal Statistical Society: Series B (Methodological)},
+  volume={36},
+  number={2},
+  pages={111--147},
+  year={1974}
+}
+
+@article{kohavi1995study,
+  title={A Study of Cross-Validation and Bootstrap for Accuracy Estimation and Model Selection},
+  author={Kohavi, Ron},
+  booktitle={Proceedings of the 14th International Joint Conference on Artificial Intelligence},
+  volume={2},
+  pages={1137--1143},
+  year={1995}
+}
+
+@book{press2007numerical,
+  title={Numerical Recipes: The Art of Scientific Computing},
+  author={Press, William H. and Teukolsky, Saul A. and Vetterling, William T. and Flannery, Brian P.},
+  edition={3},
+  publisher={Cambridge University Press},
+  year={2007},
+  address={Cambridge, UK}
+}
+
+@article{knuth1997art,
+  title={The Art of Computer Programming},
+  author={Knuth, Donald E.},
+  journal={Addison-Wesley Professional},
+  year={1997}
+}
+
+@inproceedings{armbrust2010spark,
+  title={Spark: Cluster Computing with Working Sets},
+  author={Armbrust, Michael and Zaharia, Matei and Xin, Reynold and Lian, Cheng and Huai, Yin and Liu, Davies and Bradley, Joseph K. and Meng, Xiangrui and Kaftan, Tomer and Franklin, Michael J. and others},
+  booktitle={HotCloud},
+  volume={10},
+  pages={10--10},
+  year={2010}
+}
+
+@article{dean2008mapreduce,
+  title={MapReduce: Simplified Data Processing on Large Clusters},
+  author={Dean, Jeffrey and Ghemawat, Sanjay},
+  journal={Communications of the ACM},
+  volume={51},
+  number={1},
+  pages={107--113},
+  year={2008}
+}
+
+@book{kimball2004data,
+  title={The Data Warehouse ETL Toolkit: Practical Techniques for Extracting, Cleaning, Conforming, and Delivering Data},
+  author={Kimball, Ralph and Caserta, Joe},
+  publisher={Wiley},
+  year={2004},
+  address={Indianapolis, IN}
+}
+
+@misc{harness2024,
+  title={Harness CI/CD Platform},
+  author={{Harness Inc.}},
+  howpublished={\url{https://www.harness.io/}},
+  note={Acesso em: jan. 2025},
+  year={2024},
+  url={https://www.harness.io/}
+}
+
+@misc{mlflow2024,
+  title={MLflow: An Open Source Platform for the Machine Learning Lifecycle},
+  author={{MLflow Project}},
+  howpublished={\url{https://mlflow.org/}},
+  note={Acesso em: jan. 2025},
+  year={2024},
+  url={https://mlflow.org/}
+}
+
+@article{vaswani2017attention,
+  title={Attention is All You Need},
+  author={Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N. and Kaiser, {\L}ukasz and Polosukhin, Illia},
+  journal={Advances in Neural Information Processing Systems},
+  volume={30},
+  year={2017},
+  publisher={Curran Associates, Inc.}
+}
+
+@article{brown2020language,
+  title={Language Models are Few-Shot Learners},
+  author={Brown, Tom and Mann, Benjamin and Ryder, Nick and Subbiah, Melanie and Kaplan, Jared D. and Dhariwal, Prafulla and Neelakantan, Arvind and Shyam, Pranav and Sastry, Girish and Askell, Amanda and others},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={1877--1901},
+  year={2020},
+  publisher={Curran Associates, Inc.}
+}
+
+@article{lewis2020retrieval,
+  title={Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks},
+  author={Lewis, Patrick and Perez, Ethan and Piktus, Aleksandra and Petroni, Fabio and Karpukhin, Vladimir and Goyal, Naman and K{\"u}ttler, Heinrich and Lewis, Mike and Yih, Wen-tau and Rockt{\"a}schel, Tim and others},
+  journal={Advances in Neural Information Processing Systems},
+  volume={33},
+  pages={9459--9474},
+  year={2020},
+  publisher={Curran Associates, Inc.}
+}
+
+@article{hyndman1996sample,
+  title={Sample Quantiles in Statistical Packages},
+  author={Hyndman, Rob J. and Fan, Yanan},
+  journal={The American Statistician},
+  volume={50},
+  number={4},
+  pages={361--365},
+  year={1996},
+  publisher={Taylor \& Francis}
+}

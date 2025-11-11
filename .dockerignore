@@ -1,0 +1,39 @@
+# Diretórios de ambiente virtual
+.venv/
+venv/
+env/
+ENV/
+
+# Cache do Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Dados e resultados (serão montados via volumes)
+dados/
+figuras/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentação
+doc/
+*.md
+

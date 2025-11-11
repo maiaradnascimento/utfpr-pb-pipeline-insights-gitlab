@@ -1,0 +1,62 @@
+FROM python:3.11-slim
+
+# Instala dependências do sistema
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Define o diretório de trabalho
+WORKDIR /app
+
+# Copia o requirements.txt
+COPY requirements.txt .
+
+# Instala as dependências Python
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Cria os diretórios necessários
+RUN mkdir -p dados/raw dados/processed models/transformers models/schemas /app/scripts
+
+# Copia o código fonte
+COPY src/ /app/src/
+COPY sql/ /app/sql/
+
+# Copia modelos treinados (se existirem)
+COPY models/ /app/models/
+
+# Copia dados processados (se existirem)
+COPY dados/ /app/dados/
+
+# Copia scripts de inicialização
+COPY scripts/ /app/scripts/
+
+# Copia o dump do banco (será fornecido no build)
+# Nota: Este arquivo deve existir no contexto de build
+COPY database_backup.sql.gz /app/database_backup.sql.gz
+
+# Script de inicialização do banco
+RUN echo '#!/bin/bash' > /app/scripts/init-db.sh && \
+    echo 'set -e' >> /app/scripts/init-db.sh && \
+    echo 'echo "🚀 Pipeline Optimizer - Inicializando banco de dados..."' >> /app/scripts/init-db.sh && \
+    echo 'if [ -f /app/database_backup.sql.gz ]; then' >> /app/scripts/init-db.sh && \
+    echo '    echo "📥 Restaurando banco de dados do backup..."' >> /app/scripts/init-db.sh && \
+    echo '    until pg_isready -h ${DB_HOST:-postgres} -p ${DB_PORT:-5432} -U ${DB_USER:-postgres}; do' >> /app/scripts/init-db.sh && \
+    echo '        echo "⏳ Aguardando PostgreSQL..."' >> /app/scripts/init-db.sh && \
+    echo '        sleep 2' >> /app/scripts/init-db.sh && \
+    echo '    done' >> /app/scripts/init-db.sh && \
+    echo '    gunzip -c /app/database_backup.sql.gz | PGPASSWORD=${DB_PASS:-postgres} psql -h ${DB_HOST:-postgres} -p ${DB_PORT:-5432} -U ${DB_USER:-postgres} -d ${DB_NAME:-pipeline_optimizer} || echo "⚠️  Banco pode já estar populado ou backup inválido"' >> /app/scripts/init-db.sh && \
+    echo '    echo "✅ Banco restaurado!"' >> /app/scripts/init-db.sh && \
+    echo 'else' >> /app/scripts/init-db.sh && \
+    echo '    echo "⚠️  Backup não encontrado. Criando banco vazio..."' >> /app/scripts/init-db.sh && \
+    echo '    until pg_isready -h ${DB_HOST:-postgres} -p ${DB_PORT:-5432} -U ${DB_USER:-postgres}; do' >> /app/scripts/init-db.sh && \
+    echo '        echo "⏳ Aguardando PostgreSQL..."' >> /app/scripts/init-db.sh && \
+    echo '        sleep 2' >> /app/scripts/init-db.sh && \
+    echo '    done' >> /app/scripts/init-db.sh && \
+    echo '    PGPASSWORD=${DB_PASS:-postgres} psql -h ${DB_HOST:-postgres} -p ${DB_PORT:-5432} -U ${DB_USER:-postgres} -d ${DB_NAME:-pipeline_optimizer} -f /app/sql/migrations/001_initial_schema.sql || echo "⚠️  Schema pode já existir"' >> /app/scripts/init-db.sh && \
+    echo 'fi' >> /app/scripts/init-db.sh && \
+    chmod +x /app/scripts/init-db.sh
+
+CMD ["python", "--version"]
+

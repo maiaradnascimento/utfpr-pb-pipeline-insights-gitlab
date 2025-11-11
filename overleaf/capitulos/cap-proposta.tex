@@ -1,0 +1,604 @@
+%%%% CAPÍTULO 3 - PROPOSTA
+%%
+%% Descreve a proposta do sistema, arquitetura, componentes principais
+
+\chapter{Proposta do Sistema}\label{cap:proposta}
+
+Este capítulo apresenta a proposta do sistema desenvolvido, incluindo sua arquitetura, componentes principais e fluxo de processamento.
+
+\section{Visão geral}\label{sec:visaoGeral}
+
+O sistema proposto é uma solução de análise inteligente de pipelines \gls{cicd} do \gls{gitlab} que detecta anomalias e gera recomendações automáticas de otimização, operando exclusivamente com dados de execução coletados via API, sem necessidade de acesso ao código-fonte ou arquivos de configuração.
+
+\section{Arquitetura proposta}\label{sec:arquiteturaProposta}
+
+A arquitetura do sistema segue um pipeline de processamento modular, conforme ilustrado na \autoref{fig:arquitetura}.
+
+\begin{figure}[htpb]
+\centering
+\caption{Arquitetura do sistema}
+\label{fig:arquitetura}
+\begin{center}
+\begin{tabular}{@{}c@{\hspace{0.4cm}$\rightarrow$\hspace{0.4cm}}c@{\hspace{0.4cm}$\rightarrow$\hspace{0.4cm}}c@{\hspace{0.4cm}$\rightarrow$\hspace{0.4cm}}c@{\hspace{0.4cm}$\rightarrow$\hspace{0.4cm}}c@{}}
+\textbf{Collector} & 
+\textbf{Processor} & 
+\textbf{Detector} & 
+\textbf{Recommender} & 
+\textbf{Dashboard} \\
+\hline
+\small\texttt{GitLab API} & 
+\small\texttt{PostgreSQL} & 
+\small\texttt{Scores} & 
+\small\texttt{Regras + ML} & 
+\small\texttt{HTML único} \\
+\end{tabular}
+\end{center}
+\fonte{Autora}
+\end{figure}
+
+\subsection{Collector}\label{subsec:collector}
+
+O módulo Collector é responsável pela coleta de dados do \gls{gitlab} via API \gls{rest} \citeonline{gitlabapi}, implementando um padrão de \textit{Extract} do \gls{etl} (Extract, Transform, Load) \citeonline{kimball2004data}. A implementação utiliza requisições \gls{http} GET com autenticação via token (\texttt{PRIVATE-TOKEN} header) e implementa paginação automática seguindo o padrão de paginação do \gls{gitlab} (parâmetros \texttt{page} e \texttt{per\_page}).
+
+\textbf{Implementação técnica:} O coletor utiliza a biblioteca \texttt{requests} do \gls{python} para realizar requisições \gls{http} assíncronas. A paginação é implementada através de um loop que verifica o header \texttt{x-next-page} da resposta \gls{http} para determinar se existem mais páginas disponíveis. O sistema implementa rate limiting com delay de 0,1 segundos entre requisições para respeitar os limites da API do \gls{gitlab} (rate limit padrão: 600 requisições por minuto para usuários autenticados).
+
+A \autoref{lst:collector} apresenta um trecho do código de coleta de pipelines, demonstrando a implementação da paginação e rate limiting.
+
+\begin{sourcecode}[htb]
+\caption{Coleta de pipelines com paginação automática}
+\label{lst:collector}
+\begin{lstlisting}[style=pythonstyle, firstnumber=82]
+pipes = []
+page = 1
+per_page = 100
+
+while True:
+    params = {"per_page": per_page, "page": page}
+    params.update(params_base)
+
+    r = requests.get(
+        f"{Config.GITLAB_API}/projects/{Config.PROJECT_ID}/pipelines",
+        params=params,
+        headers=headers,
+        timeout=60
+    )
+    r.raise_for_status()
+
+    page_data = r.json()
+    if not page_data:
+        break
+
+    pipes.extend(page_data)
+
+    # Rate limiting: 0.1s entre requisicoes
+    time.sleep(0.1)
+
+    # Verifica se ha mais paginas
+    if "x-next-page" not in r.headers:
+        break
+    page += 1
+
+return pipes
+\end{lstlisting}
+\fonte{Autora}
+\end{sourcecode}
+
+\textbf{Dados coletados:}
+\begin{itemize}
+    \item \textbf{Metadados de pipelines:} \texttt{id} (identificador único), \texttt{status} (success, failed, canceled, running), \texttt{ref} (branch/tag), \texttt{sha} (commit hash), \texttt{web\_url} (URL para visualização), timestamps (\texttt{created\_at}, \texttt{updated\_at}, \texttt{finished\_at})
+    \item \textbf{Metadados de jobs:} \texttt{id}, \texttt{pipeline\_id} (foreign key), \texttt{name} (nome do job), \texttt{stage} (build, test, deploy, etc.), \texttt{status}, \texttt{duration} (em segundos), \texttt{queued\_duration}, \texttt{failure\_reason} (quando falha), \texttt{retry\_count}, \texttt{web\_url}, timestamps
+    \item \textbf{Trechos de logs:} Coletados via endpoint \texttt{/jobs/\{id\}/trace} quando disponíveis, limitados aos últimos 10.000 caracteres para evitar sobrecarga de armazenamento
+\end{itemize}
+
+\textbf{Armazenamento:} Os dados são armazenados em formato append-only na tabela \texttt{pipelines\_raw} e \texttt{jobs\_raw}, garantindo histórico completo e idempotência através de chaves primárias (\texttt{id}). A estratégia append-only previne perda de dados históricos e permite reprocessamento seguro. O campo \texttt{source\_data} (tipo JSONB) armazena o payload completo da API para rastreabilidade e análise futura, seguindo o padrão de \textit{data lake} \citeonline{armbrust2021lakehouse}. O banco de dados utilizado é o \gls{postgresql}.
+
+\subsection{Processor (ETL Incremental)}\label{subsec:processor}
+
+O módulo Processor implementa \gls{etl} incremental com padrão Watermark para processar apenas novos dados \citeonline{clayton2015watermark,armbrust2020delta}. Características principais:
+\begin{itemize}
+    \item \textbf{Watermark por fonte:} armazena último timestamp processado
+    \item \textbf{Append-only:} dados raw nunca são sobrescritos, garantindo histórico completo e rastreabilidade \citeonline{kleppmann2017designing}
+    \item \textbf{UPSERT idempotente:} agregados e features são atualizados idempotentemente, permitindo reprocessamento seguro
+    \item \textbf{Janela deslizante:} reprocessa apenas últimos N dias para corrigir atrasos e garantir consistência temporal
+\end{itemize}
+
+A \autoref{lst:etl} apresenta um trecho do código de agregação de métricas diárias, demonstrando o cálculo de percentis, média e taxa de falha.
+
+\begin{sourcecode}[htb]
+\caption{Agregação de métricas diárias com cálculo de percentis}
+\label{lst:etl}
+\begin{lstlisting}[style=pythonstyle, firstnumber=395]
+# Agrega por (project_id, job_name, day)
+metrics = df.groupby(['project_id', 'job_name', 'day']).agg({
+    'status': [
+        ('builds', lambda x: (x == 'success').sum() + 
+                              (x == 'failed').sum()),
+        ('fails', lambda x: (x == 'failed').sum())
+    ],
+    'duration': [
+        ('p95_duration', lambda x: x.quantile(0.95) 
+         if len(x) > 0 else None),
+        ('p99_duration', lambda x: x.quantile(0.99) 
+         if len(x) > 0 else None),
+        ('avg_duration', 'mean'),
+        ('total_duration', 'sum')
+    ],
+    'retry_count': 'max',
+    'failure_reason': lambda x: json.dumps(
+        x[x.notna()].value_counts().head(5).to_dict())
+}).reset_index()
+
+# Calcula taxa de falha: fail_rate = fails / builds
+features['fail_rate'] = features['fails'] / (
+    features['builds'] + 1)
+\end{lstlisting}
+\fonte{Autora}
+\end{sourcecode}
+
+O Processor gera agregados diários na tabela \texttt{metrics\_daily}, calculando:
+\begin{itemize}
+    \item Total de builds e falhas por job/dia
+    \item Percentis de duração (p95, p99)
+    \item Duração média e total
+    \item Máximo de retries
+    \item Tipos de erro mais frequentes (agregados em JSONB)
+\end{itemize}
+
+\subsection{Feature Engineering}\label{subsec:featureEngineering}
+
+O sistema constrói features agregadas por \texttt{entity\_key} (formato: \texttt{project\_id:job\_name}), seguindo práticas de Feature Store \citeonline{he2017feature,he2017featurestore}. As features são armazenadas em:
+\begin{itemize}
+    \item \texttt{features\_offline:} histórico completo (com event\_time) para análise temporal e treinamento de modelos
+    \item \texttt{features\_online:} cache atual para inferência rápida em tempo real
+\end{itemize}
+
+Features principais:
+\begin{itemize}
+    \item \texttt{dur\_total:} duração total (p95\_duration)
+    \item \texttt{stage\_build, stage\_test, stage\_deploy:} estimativas por stage
+    \item \texttt{fail\_rate:} taxa de falha (fails / builds)
+    \item \texttt{max\_retries:} máximo de retries observado
+\end{itemize}
+
+\subsection{Detector (Stats + ML)}\label{subsec:detector}
+
+O módulo Detector implementa uma abordagem híbrida combinando estatística robusta e aprendizado de máquina não supervisionado, seguindo o paradigma de \textit{ensemble methods} \citeonline{breiman2001random} e \textit{unsupervised learning} \citeonline{bishop2006pattern}.
+
+\subsubsection{Estatística Robusta}\label{subsubsec:estatisticaRobusta}
+
+A estatística robusta é calculada utilizando métodos não-paramétricos que são resistentes a outliers \citeonline{tukey1977exploratory}. O sistema calcula:
+
+\begin{itemize}
+    \item \textbf{Percentis:} Utilizando o método de interpolação linear (tipo 7 de Hyndman-Fan) \citeonline{hyndman1996sample}, calculando p50 (mediana), p75, p90, p95, p99. A mediana é preferida à média para distribuições assimétricas, pois é mais robusta a outliers.
+    \item \textbf{Média e desvio-padrão:} Calculados utilizando fórmulas amostrais: $\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i$ e $s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(x_i - \bar{x})^2}$ (desvio-padrão amostral corrigido).
+    \item \textbf{Z-score:} Calculado como $z = \frac{x - \mu}{\sigma}$, onde valores $|z| > 2$ indicam desvios significativos (aproximadamente 95\% dos dados em distribuição normal) e $|z| > 3$ indicam desvios extremos (99,7\% dos dados) \citeonline{pearson1901lines}.
+\end{itemize}
+
+\subsubsection{Isolation Forest}\label{subsubsec:isolationForestDetector}
+
+O algoritmo \gls{if} \citeonline{liu2008isolation,liu2012isolation} é implementado utilizando a biblioteca \gls{scikit} \citeonline{pedregosa2011scikit}. A \autoref{lst:isolationforest} apresenta a implementação do treinamento do modelo com os seguintes hiperparâmetros:
+
+\begin{itemize}
+    \item \texttt{n\_estimators=100}: Número de árvores de isolamento. Cada árvore é construída com subamostragem aleatória de $\psi$ observações (padrão: 256).
+    \item \texttt{contamination=0.1}: Proporção esperada de anomalias na população. Este parâmetro controla o threshold de decisão: valores menores reduzem falsos positivos mas podem aumentar falsos negativos.
+    \item \texttt{max\_features}: Número de features consideradas em cada split (padrão: todas as features).
+    \item \texttt{random\_state=42}: Semente para reprodutibilidade.
+\end{itemize}
+
+\begin{sourcecode}[htb]
+\caption{Treinamento do modelo Isolation Forest}
+\label{lst:isolationforest}
+\begin{lstlisting}[style=pythonstyle, firstnumber=105]
+# Features selecionadas
+feature_cols = ['dur_total', 'stage_build', 
+                'stage_test', 'stage_deploy', 
+                'fail_rate', 'max_retries']
+X = df[feature_cols].fillna(0).values
+
+# Normalização (z-score normalization)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Treina Isolation Forest
+model = IsolationForest(
+    contamination=Config.ML_CONTAMINATION,  # 0.1
+    random_state=Config.ML_RANDOM_STATE,    # 42
+    n_estimators=200
+)
+
+model.fit(X_scaled)
+
+# Predições e scores
+predictions = model.predict(X_scaled)
+scores = model.score_samples(X_scaled)
+\end{lstlisting}
+\fonte{Autora}
+\end{sourcecode}
+
+\textbf{Funcionamento algorítmico:} O Isolation Forest funciona através do princípio de que anomalias são mais fáceis de isolar do que observações normais. Para cada árvore, o algoritmo seleciona aleatoriamente uma feature e um valor de split, particionando recursivamente o espaço de features. O comprimento do caminho médio (average path length) até isolar uma observação é utilizado como score de anomalia: $s(x, \psi) = 2^{-\frac{E(h(x))}{c(\psi)}}$, onde $h(x)$ é o comprimento do caminho e $c(\psi)$ é um fator de normalização. Valores de score próximos a 1 indicam observações normais, enquanto valores próximos a 0 indicam anomalias.
+
+\subsubsection{K-Means Clustering}\label{subsubsec:kmeansDetector}
+
+O algoritmo \gls{kmeans} \citeonline{macqueen1967some} é utilizado para agrupamento não supervisionado, implementando a inicialização K-Means++ \citeonline{arthur2007kmeans} para melhorar a convergência e evitar mínimos locais ruins.
+
+\textbf{Hiperparâmetros:}
+\begin{itemize}
+    \item \texttt{n\_clusters=3}: Número de clusters (pipelines curtas, médias, longas). O valor k=3 foi escolhido através de análise de elbow method e silhouette score \citeonline{rousseeuw1987silhouettes}.
+    \item \texttt{init='k-means++'}: Inicialização inteligente que seleciona centros iniciais distantes entre si, melhorando a convergência.
+    \item \texttt{max\_iter=300}: Número máximo de iterações do algoritmo.
+    \item \texttt{random\_state=42}: Semente para reprodutibilidade.
+\end{itemize}
+
+\textbf{Algoritmo:} K-Means minimiza a função objetivo: $J = \sum_{i=1}^{n}\sum_{j=1}^{k} w_{ij}||x_i - \mu_j||^2$, onde $w_{ij} = 1$ se $x_i$ pertence ao cluster $j$, e 0 caso contrário. O algoritmo alterna entre: (1) atribuir observações ao cluster mais próximo (E-step), (2) recalcular os centróides (M-step), até convergência ou máximo de iterações. A otimização utiliza a desigualdade triangular \citeonline{elkan2003using} para acelerar o cálculo de distâncias.
+
+\textbf{Contextualização:} Cada pipeline recebe um label de cluster (0, 1 ou 2), permitindo thresholds adaptativos por cluster. Por exemplo, uma pipeline no cluster de "longas" com duração de 30 minutos pode ser normal para seu cluster, enquanto uma pipeline no cluster de "curtas" com a mesma duração seria classificada como anomalia.
+
+O Model Registry versiona modelos, transformadores (scalers) e feature schemas, permitindo reprodutibilidade e evolução incremental \citeonline{breck2017mlops,sculley2015hidden}. Esta abordagem reduz dívida técnica em sistemas de ML e facilita o gerenciamento do ciclo de vida de modelos em produção, seguindo práticas de MLOps \citeonline{arpteg2018software}.
+
+\subsection{Recommender}\label{subsec:recommender}
+
+O módulo Recommender implementa o padrão Strategy \citeonline{gamma1995design}, permitindo múltiplas estratégias de recomendação. A estratégia principal implementada é a \textbf{Intelligent Strategy}, que combina múltiplas técnicas de análise.
+
+\subsubsection{Estratégia Intelligent (IA Inteligente)}\label{subsubsec:estrategiaIntelligent}
+
+A estratégia Intelligent Strategy implementa um pipeline de aprendizado de máquina não supervisionado seguindo o paradigma de \textit{multi-stage learning} \citeonline{mitchell1997machine}, combinando técnicas de agrupamento, detecção de anomalias e análise contextual multi-feature. O fluxo de processamento segue os seguintes passos:
+
+\begin{enumerate}
+    \item \textbf{Preparação de Features:} O sistema realiza seleção de features baseada em relevância e correlação \citeonline{hastie2009elements}. Features selecionadas incluem: \texttt{dur\_total} (duração total agregada), \texttt{stage\_build}, \texttt{stage\_test}, \texttt{stage\_deploy} (duração estimada por stage), \texttt{fail\_rate} (taxa de falha: $\frac{fails}{builds}$). As features são normalizadas utilizando StandardScaler (z-score normalization: $z = \frac{x - \mu}{\sigma}$) para garantir que todas as variáveis tenham a mesma escala, evitando que features com valores maiores dominem o algoritmo de clustering.
+    
+    \item \textbf{Clustering (\gls{kmeans}):} Agrupa pipelines similares em clusters (k=3) utilizando o algoritmo K-Means++ \citeonline{arthur2007kmeans} para contextualização. O número de clusters foi determinado através de análise de elbow method e validação via silhouette coefficient \citeonline{rousseeuw1987silhouettes}. A métrica de distância utilizada é a distância euclidiana: $d(x, y) = \sqrt{\sum_{i=1}^{n}(x_i - y_i)^2}$. Os clusters identificados representam perfis distintos: (0) pipelines curtas (duração < p50), (1) pipelines médias (p50 $\leq$ duração < p90), (2) pipelines longas (duração $\geq$ p90).
+
+    \item \textbf{Detecção de Anomalias (\gls{if}):} Aplica \gls{if} \citeonline{liu2008isolation,liu2012isolation} com contamination configurável (padrão 0,1) para identificar outliers. O algoritmo gera scores de anomalia no intervalo $[-1, 1]$, onde valores negativos (normalmente $< -0.5$) indicam anomalias. A decisão binária (anomalia/normal) é feita através do método \texttt{fit\_predict()}, que retorna -1 para anomalias e 1 para observações normais.
+    
+    \item \textbf{Aprendizado de Thresholds Adaptativos:} Calcula estatísticas descritivas robustas para cada feature utilizando métodos não-paramétricos \citeonline{tukey1977exploratory}: percentis (p50, p75, p90, p95, p99) utilizando interpolação linear, média amostral ($\bar{x} = \frac{1}{n}\sum x_i$), desvio-padrão amostral corrigido ($s = \sqrt{\frac{1}{n-1}\sum(x_i - \bar{x})^2}$). Os thresholds são calculados por cluster, permitindo adaptação contextual. Por exemplo, o threshold p95 para \texttt{dur\_total} no cluster de pipelines longas será maior que no cluster de pipelines curtas, evitando falsos positivos.
+
+A \autoref{lst:thresholds} apresenta a implementação do método que aprende thresholds adaptativos a partir dos dados.
+
+\begin{sourcecode}[htb]
+\caption{Aprendizado de thresholds adaptativos}
+\label{lst:thresholds}
+\begin{lstlisting}[style=pythonstyle, firstnumber=99]
+def _learn_thresholds(self, df: pd.DataFrame, 
+                      features: List[str]) -> dict:
+    """Aprende thresholds dos dados (não hardcoded)"""
+    thresholds = {}
+    for feat in features:
+        if feat in df.columns:
+            thresholds[feat] = {
+                'p50': df[feat].quantile(0.50),
+                'p75': df[feat].quantile(0.75),
+                'p90': df[feat].quantile(0.90),
+                'p95': df[feat].quantile(0.95),
+                'p99': df[feat].quantile(0.99),
+                'mean': df[feat].mean(),
+                'std': df[feat].std()
+            }
+    return thresholds
+\end{lstlisting}
+\fonte{Autora}
+\end{sourcecode}
+    
+    \item \textbf{Análise Contextual Multi-Feature:} Para cada anomalia detectada, o sistema realiza análise multivariada \citeonline{tan2006introduction}, analisando múltiplas features simultaneamente. A classificação de severidade segue uma heurística baseada em percentis e z-scores:
+    \begin{itemize}
+        \item \textbf{NORMAL:} valor $\leq$ p75 ou $|z| < 1.0$
+        \item \textbf{MEDIO\_ALTO:} p75 < valor $\leq$ p90 ou $1.0 \leq |z| < 2.0$
+        \item \textbf{ALTO:} p90 < valor $\leq$ p95 ou $2.0 \leq |z| < 2.5$
+        \item \textbf{MUITO\_ALTO:} p95 < valor $\leq$ p99 ou $2.5 \leq |z| < 3.0$
+        \item \textbf{EXTREMO:} valor > p99 ou $|z| \geq 3.0$
+    \end{itemize}
+    O z-score é calculado por cluster: $z = \frac{x - \mu_{cluster}}{\sigma_{cluster}}$, onde $\mu_{cluster}$ e $\sigma_{cluster}$ são a média e desvio-padrão do cluster ao qual a pipeline pertence.
+
+A \autoref{lst:zscore} apresenta a implementação do cálculo de z-score e classificação de severidade por feature.
+
+\begin{sourcecode}[htb]
+\caption{Cálculo de z-score e análise contextual}
+\label{lst:zscore}
+\begin{lstlisting}[style=pythonstyle, firstnumber=115]
+def _analyze_context(self, pipeline: pd.Series, 
+                     thresholds: dict, 
+                     features: List[str]) -> dict:
+    """Analisa contexto completo (múltiplas features)"""
+    context = {}
+    
+    for feat in features:
+        if feat not in pipeline or feat not in thresholds:
+            continue
+        
+        value = pipeline[feat]
+        t = thresholds[feat]
+        
+        # Classifica nível baseado em percentis
+        if value > t['p99']:
+            level = 'EXTREMO'
+        elif value > t['p95']:
+            level = 'MUITO_ALTO'
+        elif value > t['p90']:
+            level = 'ALTO'
+        elif value > t['p75']:
+            level = 'MEDIO_ALTO'
+        else:
+            level = 'NORMAL'
+        
+        # Calcula z-score: z = (x - mu) / sigma
+        z_score = 0
+        if t['std'] > 0:
+            z_score = (value - t['mean']) / t['std']
+        
+        context[feat] = {
+            'value': value,
+            'level': level,
+            'z_score': z_score,
+            'p50': t['p50'],
+            'p95': t['p95']
+        }
+    
+    return context
+\end{lstlisting}
+\fonte{Autora}
+\end{sourcecode}
+    
+    \item \textbf{Identificação de Padrões Contextuais:} O sistema implementa um conjunto de regras baseadas em análise de correlação e padrões observados empiricamente \citeonline{domingos2012few}. Os padrões são identificados através de condições lógicas sobre múltiplas features:
+    \begin{itemize}
+        \item \textbf{slow\_build\_stable:} Detectado quando $\texttt{stage\_build} \in \{ALTO, MUITO\_ALTO, EXTREMO\}$ E $\texttt{fail\_rate} \in \{NORMAL, MEDIO\_ALTO\}$. Indica dependências que podem ser cacheadas. Ação recomendada: adicionar \texttt{cache} no GitLab CI com chave baseada em \texttt{CI\_COMMIT\_REF\_SLUG}.
+        \item \textbf{slow\_build\_unstable:} Detectado quando $\texttt{stage\_build} \in \{ALTO, MUITO\_ALTO, EXTREMO\}$ E $\texttt{fail\_rate} \in \{ALTO, MUITO\_ALTO, EXTREMO\}$. Indica recursos insuficientes ou configuração inadequada. Ação recomendada: revisar timeouts e recursos alocados.
+        \item \textbf{slow\_tests:} Detectado quando $\texttt{stage\_test} \in \{ALTO, MUITO\_ALTO, EXTREMO\}$. Indica execução sequencial de testes. Ação recomendada: adicionar \texttt{parallel:} (2--8) e particionamento usando sharding (ex: pytest com \texttt{--shard}).
+        \item \textbf{high\_failure:} Detectado quando $\texttt{fail\_rate} \in \{ALTO, MUITO\_ALTO, EXTREMO\}$. Indica flakiness ou instabilidade de infraestrutura. Ação recomendada: adicionar \texttt{retry} com condições específicas (\texttt{runner\_system\_failure}, \texttt{stuck\_or\_timeout\_failure}).
+    \end{itemize}
+    
+    \item \textbf{Geração de Recomendações:} Gera recomendações estruturadas baseadas no padrão identificado, seguindo o formato de \textit{actionable insights} \citeonline{guidotti2018survey}. Cada recomendação inclui:
+    \begin{itemize}
+        \item \textbf{Categoria:} Classificação hierárquica (Build, Test, Infraestrutura, Confiabilidade, Geral)
+        \item \textbf{Ação:} Descrição textual da ação recomendada (ex: "CACHE: Build lento mas estável")
+        \item \textbf{Justificativa quantitativa:} Evidências numéricas incluindo z-score ($z = 2.7$), percentis ($p95 = 450s$, valor atual $= 680s$), e comparação com mediana do cluster
+        \item \textbf{Ganho estimado:} Calculado como diferença entre valor atual e p50 do cluster: $\Delta = x_{atual} - p50_{cluster}$. O ganho percentual é: $\Delta\% = \frac{\Delta}{x_{atual}} \times 100$
+
+A \autoref{lst:ganho} apresenta a implementação do cálculo de ganho estimado e confiança baseada em z-score.
+
+\begin{sourcecode}[htb]
+\caption{Cálculo de ganho estimado e confiança}
+\label{lst:ganho}
+\begin{lstlisting}[style=pythonstyle, firstnumber=206]
+def _generate_recommendation_from_pattern(
+    self, pipeline_id: int, pattern: dict, 
+    context: dict, cluster: int) -> Recommendation:
+    """Gera recomendação baseada no padrão identificado"""
+    
+    # Determina feature principal pelo z-score absoluto
+    main_feature = max(
+        context.items(),
+        key=lambda x: abs(x[1].get('z_score', 0))
+    )
+    feat_name = main_feature[0]
+    feat_info = main_feature[1]
+    
+    # Calcula ganho: Delta = x_atual - p50_cluster
+    gain = (feat_info['value'] - feat_info['p50'] 
+            if feat_info['value'] > feat_info['p50'] 
+            else 0)
+    
+    # Ganho percentual: Delta% = (Delta / x_atual) * 100
+    gain_pct = ((gain / feat_info['value'] * 100) 
+                if feat_info['value'] > 0 else 0)
+    
+    # Confiança baseada em z-score absoluto
+    z = abs(feat_info['z_score'])
+    confidence = ('ALTA' if z > 2.5 
+                  else 'MÉDIA' if z > 2.0 
+                  else 'BAIXA')
+    
+    return Recommendation(
+        pipeline_id=pipeline_id,
+        estimated_gain_sec=gain,
+        estimated_gain_pct=gain_pct,
+        confidence=confidence,
+        ...
+    )
+\end{lstlisting}
+\fonte{Autora}
+\end{sourcecode}
+        \item \textbf{Confiança:} Nível calculado baseado no z-score absoluto: BAIXA ($|z| < 2.0$), MÉDIA ($2.0 \leq |z| < 2.5$), ALTA ($|z| \geq 2.5$)
+        \item \textbf{Código \gls{yaml}:} Template gerado automaticamente seguindo a sintaxe do \gls{gitlab} \gls{cicd} \citeonline{gitlabapi}, incluindo variáveis de ambiente e configurações específicas
+        \item \textbf{Evidências:} Metadados contextuais incluindo cluster ID, features analisadas, scores de anomalia, e timestamps
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Padrões de Recomendação}\label{subsubsec:padroesRecomendacao}
+
+A estratégia identifica os seguintes padrões contextuais:
+
+\begin{description}
+    \item[\textbf{slow\_build\_stable}] Detectado quando \texttt{stage\_build} está ALTO/MUITO\_ALTO/EXTREMO e \texttt{fail\_rate} está NORMAL/MEDIO\_ALTO. Indica dependências que podem ser cacheadas. Recomendação: adicionar \texttt{cache} no GitLab CI.
+    
+    \item[\textbf{slow\_build\_unstable}] Detectado quando \texttt{stage\_build} e \texttt{fail\_rate} estão ambos elevados. Indica recursos insuficientes. Recomendação: revisar configuração de recursos e timeouts.
+    
+    \item[\textbf{slow\_tests}] Detectado quando \texttt{stage\_test} está elevado. Indica execução sequencial de testes. Recomendação: adicionar \texttt{parallel:} (2--8) e particionamento de testes.
+    
+    \item[\textbf{high\_failure}] Detectado quando \texttt{fail\_rate} está elevado. Indica flakiness ou instabilidade. Recomendação: adicionar \texttt{retry} com condições específicas (\texttt{runner\_system\_failure}, \texttt{stuck\_or\_timeout\_failure}).
+\end{description}
+
+\subsubsection{Geração de Código YAML}\label{subsubsec:geracaoYAML}
+
+A estratégia gera automaticamente exemplos de código \gls{yaml} do \gls{gitlab} CI para cada tipo de recomendação:
+
+\begin{itemize}
+    \item \textbf{Cache:} Gera configuração de cache com chave baseada em \texttt{CI\_COMMIT\_REF\_SLUG} e paths configuráveis
+    \item \textbf{Paralelização:} Gera configuração de \texttt{parallel} com número de workers e script de particionamento (ex: pytest com sharding)
+    \item \textbf{Retry:} Gera template de retry com condições específicas e máximo de tentativas
+    \item \textbf{Genérico:} Sugere revisão manual da configuração do pipeline
+\end{itemize}
+
+Cada recomendação inclui justificativa quantitativa baseada em evidências estatísticas (z-score, percentis) e contexto do cluster ao qual a pipeline pertence, permitindo thresholds adaptativos que reduzem falsos positivos.
+
+\subsection{Dashboard}\label{subsec:dashboard}
+
+O Dashboard é gerado como \gls{html} auto-contido com as seguintes seções:
+\begin{itemize}
+    \item \textbf{Estatísticas gerais:} Métricas agregadas do projeto (total de pipelines, taxa de sucesso, duração média)
+    \item \textbf{Insights e Análises Detalhadas:} Análises agregadas de jobs incluindo top jobs que mais falham, motivos de falha mais comuns, tempo médio em fila, e identificação de jobs instáveis (flaky)
+    \item \textbf{Problemas Detectados:} Cards de anomalias priorizadas por score, contendo tipo, problema, detalhes e soluções sugeridas
+    \item \textbf{Erros em Jobs:} Lista de jobs que falharam com trechos de logs quando disponíveis
+    \item \textbf{Resumo Geral:} Estatísticas consolidadas e contadores de problemas encontrados
+    \item \textbf{Links diretos:} Para pipelines/jobs no GitLab
+\end{itemize}
+
+
+\section{API REST e UI Interativa}\label{sec:apiRestUI}
+
+O sistema inclui:
+\begin{itemize}
+    \item \textbf{API \gls{rest} (\gls{fastapi}):} endpoints para predições, métricas, inferência e erros \citeonline{fastapi2024}. \gls{fastapi} oferece documentação automática (Swagger/OpenAPI) e alta performance através de validação de tipos e async/await
+    \item \textbf{UI Interativa (\gls{streamlit}):} interface web com filtros de data, visualizações e execução de \gls{etl}/treino \citeonline{streamlit2024}. \gls{streamlit} permite desenvolvimento rápido de interfaces de dados interativas sem necessidade de conhecimento em frontend
+\end{itemize}
+
+A arquitetura incremental permite processamento sob demanda e atualização contínua sem reprocessar todo o histórico.
+
+\section{Estrutura do banco de dados}\label{sec:estruturaBanco}
+
+O banco de dados PostgreSQL \citeonline{postgresql2024} implementa um esquema relacional otimizado para processamento incremental e versionamento de modelos. A modelagem segue os princípios de append-only para dados raw, UPSERT idempotente para agregados e feature store para inferência rápida \citeonline{kleppmann2017designing,stonebraker2005one}.
+
+\subsection{Modelo de Dados}\label{subsec:modeloDados}
+
+A \autoref{fig:modeloBanco} ilustra a estrutura completa do banco de dados:
+
+\begin{figure}[htpb]
+\centering
+\caption{Modelo de dados do sistema}
+\label{fig:modeloBanco}
+\begin{center}
+\begin{tabular}{ll}
+\multicolumn{2}{c}{\textbf{Tabelas Raw (Append-Only)}} \\
+\hline
+\texttt{pipelines\_raw} & \texttt{jobs\_raw} \\
+(id, project\_id, status, ref, sha, & (id, pipeline\_id, project\_id, name, \\
+web\_url, created\_at, finished\_at, & stage, status, duration, \\
+source\_data, ingested\_at) & failure\_reason, retry\_count, \\
+ & web\_url, created\_at, finished\_at, \\
+ & source\_data, ingested\_at) \\
+\hline
+\multicolumn{2}{c}{\textbf{Controle de Processamento}} \\
+\hline
+\texttt{processing\_watermarks} & \texttt{kv\_config} \\
+(source, last\_ts, updated\_at) & (key, value, updated\_at) \\
+\hline
+\multicolumn{2}{c}{\textbf{Agregados e Features}} \\
+\hline
+\texttt{metrics\_daily} & \texttt{features\_offline} \\
+(project\_id, job\_name, day, & (entity\_key, feature\_version, \\
+builds, fails, p95\_duration, & payload, event\_time, created\_at) \\
+p99\_duration, avg\_duration, & \\
+total\_duration, max\_retries, & \texttt{features\_online} \\
+error\_types, updated\_at) & (entity\_key, feature\_version, \\
+ & payload, updated\_at) \\
+\hline
+\multicolumn{2}{c}{\textbf{Model Registry e Predições}} \\
+\hline
+\texttt{model\_registry} & \texttt{predictions} \\
+(model\_version, feature\_version, & (run\_id, model\_version, \\
+model\_type, model\_path, & feature\_version, prediction, \\
+transformer\_path, feature\_schema\_path, & score, label, metadata, \\
+training\_window\_start, training\_window\_end, & created\_at) \\
+metrics, is\_current, created\_at, & \\
+trained\_by) & \texttt{predictions\_backfill} \\
+ & (run\_id, model\_version, \\
+ & feature\_version, prediction, \\
+ & score, label, metadata, \\
+ & created\_at) \\
+\end{tabular}
+\end{center}
+\fonte{Autora}
+\end{figure}
+
+\subsection{Descrição das Tabelas}\label{subsec:descricaoTabelas}
+
+\subsubsection{Tabelas Raw (Append-Only)}
+
+\begin{description}
+    \item[\texttt{pipelines\_raw}] Armazena metadados brutos de pipelines coletados via API do GitLab. Campos principais: \texttt{id} (PK), \texttt{project\_id}, \texttt{status}, \texttt{ref}, \texttt{sha}, \texttt{web\_url}, timestamps (\texttt{created\_at}, \texttt{finished\_at}), \texttt{source\_data} (JSONB com dados completos da API), \texttt{ingested\_at} (timestamp de ingestão). Índice em \texttt{(project\_id, updated\_at)} para consultas incrementais.
+    
+    \item[\texttt{jobs\_raw}] Armazena metadados brutos de jobs coletados via API do GitLab. Campos principais: \texttt{id} (PK), \texttt{pipeline\_id} (FK para \texttt{pipelines\_raw}), \texttt{project\_id}, \texttt{name}, \texttt{stage}, \texttt{status}, \texttt{duration}, \texttt{queued\_duration}, \texttt{failure\_reason}, \texttt{retry\_count}, \texttt{web\_url}, timestamps, \texttt{source\_data} (JSONB), \texttt{ingested\_at}. Índices em \texttt{(pipeline\_id)} e \texttt{(project\_id, created\_at)}.
+\end{description}
+
+\subsubsection{Controle de Processamento}
+
+\begin{description}
+    \item[\texttt{processing\_watermarks}] Implementa o padrão Watermark para controle de processamento incremental. Campos: \texttt{source} (PK, identifica a fonte de dados), \texttt{last\_ts} (último timestamp processado), \texttt{updated\_at} (timestamp da última atualização). Permite processar apenas novos dados desde a última execução.
+    
+    \item[\texttt{kv\_config}] Armazena configurações chave-valor do sistema. Campos: \texttt{key} (PK), \texttt{value} (valor da configuração), \texttt{updated\_at}. Usado para armazenar \texttt{MODEL\_CURRENT}, \texttt{FEATURE\_VERSION\_CURRENT} e outras configurações globais.
+\end{description}
+
+\subsubsection{Agregados e Features}
+
+\begin{description}
+    \item[\texttt{metrics\_daily}] Armazena agregados diários por job, calculados pelo ETL incremental. Chave primária composta: \texttt{(project\_id, job\_name, day)}. Campos: \texttt{builds} (total de builds), \texttt{fails} (total de falhas), \texttt{p95\_duration}, \texttt{p99\_duration}, \texttt{avg\_duration}, \texttt{total\_duration}, \texttt{max\_retries}, \texttt{error\_types} (JSONB com tipos de erro agregados), \texttt{updated\_at}. Atualizado via UPSERT idempotente.
+    
+    \item[\texttt{features\_offline}] Feature Store histórico completo. Campos: \texttt{entity\_key} (formato: \texttt{project\_id:job\_name}), \texttt{feature\_version}, \texttt{payload} (JSONB com features calculadas), \texttt{event\_time} (timestamp do evento), \texttt{created\_at}. Chave primária composta: \texttt{(entity\_key, feature\_version)}. Índice em \texttt{(entity\_key, event\_time)} para consultas temporais.
+    
+    \item[\texttt{features\_online}] Feature Store cache atual para inferência rápida. Campos: \texttt{entity\_key} (PK), \texttt{feature\_version}, \texttt{payload} (JSONB com features atuais), \texttt{updated\_at}. Mantém apenas a versão mais recente de cada \texttt{entity\_key} para inferência em tempo real.
+\end{description}
+
+\subsubsection{Model Registry e Predições}
+
+\begin{description}
+    \item[\texttt{model\_registry}] Versionamento de modelos, transformadores e feature schemas. Campos: \texttt{model\_version} (PK), \texttt{feature\_version}, \texttt{model\_type}, \texttt{model\_path}, \texttt{transformer\_path}, \texttt{feature\_schema\_path}, \texttt{training\_window\_start}, \texttt{training\_window\_end}, \texttt{metrics} (JSONB com métricas de treinamento), \texttt{is\_current} (flag indicando modelo atual), \texttt{created\_at}, \texttt{trained\_by}. Permite reprodutibilidade e evolução incremental de modelos.
+    
+    \item[\texttt{predictions}] Armazena predições imutáveis por execução. Chave primária composta: \texttt{(run\_id, model\_version)}. Campos: \texttt{feature\_version}, \texttt{prediction} (JSONB com resultado da predição), \texttt{score} (score de anomalia), \texttt{label} (classificação), \texttt{metadata} (JSONB com metadados adicionais), \texttt{created\_at}. Índices em \texttt{(run\_id, created\_at)} e \texttt{(model\_version, created\_at)}.
+    
+    \item[\texttt{predictions\_backfill}] Armazena predições históricas geradas por backfill. Estrutura idêntica a \texttt{predictions}, permitindo análise retrospectiva sem modificar predições originais.
+\end{description}
+
+\subsection{Relacionamentos e Integridade}\label{subsec:relacionamentos}
+
+O esquema garante integridade referencial através de:
+\begin{itemize}
+    \item Foreign Key: \texttt{jobs\_raw.pipeline\_id} $\rightarrow$ \texttt{pipelines\_raw.id} com \texttt{ON DELETE CASCADE}
+    \item Chaves primárias compostas para garantir unicidade em agregados e features
+    \item Índices otimizados para consultas incrementais e temporais
+    \item Constraints implícitos via chaves primárias e únicas
+\end{itemize}
+
+A estrutura garante idempotência (via UPSERT e chaves primárias), rastreabilidade (via timestamps e versionamento) e suporte eficiente a processamento incremental (via watermarks e índices temporais).
+
+\section{Repositório e Distribuição}\label{sec:repositorio}
+
+O código-fonte do sistema está disponível publicamente para reprodução e extensão:
+
+\begin{itemize}
+    \item \textbf{Repositório GitHub:} \url{https://github.com/maiaradnascimento/utfpr-pb-pipeline-insights-gitlab}
+    \item \textbf{Docker Hub:} \url{https://hub.docker.com/u/maiaradnascimento}
+    \item \textbf{Overleaf (Documento LaTeX):} Disponível no repositório GitHub acima
+\end{itemize}
+
+O repositório inclui:
+\begin{itemize}
+    \item Código-fonte completo em Python
+    \item Scripts de migração do banco de dados (\texttt{sql/migrations/})
+    \item Dockerfile e docker-compose para execução containerizada
+    \item Documentação completa no README.md
+    \item Modelos treinados e schemas de features versionados
+    \item Scripts CLI para coleta, ETL, treinamento e análise
+    \item Documento LaTeX completo do TCC (pasta \texttt{overleaf/})
+\end{itemize}
+
+A distribuição via Docker Hub permite execução imediata sem necessidade de build local, facilitando reprodução de experimentos e deploy em ambientes diversos. Os dados gerados e modelos treinados estão disponíveis como imagens Docker no Docker Hub, permitindo reprodução completa dos experimentos.
+
+\section{Projeto de Validação}\label{sec:projetoValidacao}
+
+O sistema foi validado utilizando pipelines do projeto \textit{To Be Continuous - Node.js CI/CD Catalog} \citeonline{tobecontinuous2024}, disponível publicamente em \url{https://gitlab.com/to-be-continuous/node}. Este projeto foi escolhido por apresentar pipelines CI/CD reais e representativas, com múltiplos stages (build, test, deploy) e jobs variados, fornecendo um conjunto de dados robusto para validação do sistema. O modelo foi treinado exclusivamente com dados coletados deste projeto público, garantindo reprodutibilidade e transparência dos resultados apresentados neste trabalho.
+
+\section{Recomendações Corporativas e Modelos Locais}\label{sec:recomendacoesCorporativas}
+
+Uma limitação importante do sistema atual é que as recomendações geradas são baseadas em padrões universais e heurísticas genéricas, não considerando regras e políticas específicas de cada organização. Em ambientes corporativos, diferentes empresas possuem requisitos distintos de compliance, segurança, arquitetura e boas práticas que devem ser refletidas nas recomendações de otimização de pipelines.
+
+\textbf{Necessidade de Modelos Locais:} Para que empresas possam incluir recomendações personalizadas baseadas em suas regras corporativas, é necessário que o sistema seja capaz de aprender e aplicar conhecimento específico da organização. Esta personalização requer modelos treinados ou configurados localmente, utilizando dados e políticas internas da empresa. Ferramentas públicas ou pagas existentes, como Datadog APM, Dynatrace, Harness CI/CD \citeonline{harness2024}, e ferramentas de MLOps como MLflow \citeonline{mlflow2024}, geralmente oferecem recomendações genéricas baseadas em melhores práticas da indústria, mas não permitem personalização profunda baseada em regras corporativas específicas sem acesso ao código-fonte ou configurações internas.
+
+\textbf{Abordagem Proposta para Trabalhos Futuros:} Como extensão natural deste trabalho, propõe-se o desenvolvimento de um módulo baseado em \textit{Large Language Models} (LLMs) \citeonline{vaswani2017attention,brown2020language} para geração de recomendações corporativas personalizadas. Este módulo utilizaria \textit{Retrieval-Augmented Generation} (RAG) \citeonline{lewis2020retrieval} para acessar uma base de conhecimento corporativa estruturada, incluindo:
+
+\begin{itemize}
+    \item \textbf{FAQ corporativo:} Perguntas frequentes sobre políticas de CI/CD, padrões de arquitetura, e regras de compliance da organização
+    \item \textbf{Base de dados histórica:} Registros de incidentes passados, soluções aplicadas, e decisões arquiteturais documentadas
+    \item \textbf{Documentação técnica:} Guias de boas práticas internas, templates de pipelines aprovados, e padrões de código específicos da empresa
+    \item \textbf{Regras de negócio:} Políticas de segurança, requisitos de auditoria, e restrições de infraestrutura específicas da organização
+\end{itemize}
+
+O LLM seria treinado ou configurado para consultar esta base de conhecimento antes de gerar recomendações, garantindo que as sugestões estejam alinhadas com as políticas e práticas da organização. Esta abordagem permitiria que empresas mantenham controle sobre as recomendações geradas, adaptando o sistema às suas necessidades específicas sem expor código-fonte ou configurações sensíveis, mantendo assim os princípios de privacidade e segurança que fundamentam este trabalho.
+

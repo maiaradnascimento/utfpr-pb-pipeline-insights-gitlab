@@ -1,0 +1,35 @@
+{
+  "version": 2,
+  "features": [
+    "dur_total",
+    "stage_build",
+    "stage_test",
+    "stage_deploy",
+    "fail_rate",
+    "max_retries"
+  ],
+  "order": [
+    "dur_total",
+    "stage_build",
+    "stage_test",
+    "stage_deploy",
+    "fail_rate",
+    "max_retries"
+  ],
+  "dtypes": {
+    "dur_total": "float64",
+    "stage_build": "float64",
+    "stage_test": "float64",
+    "stage_deploy": "float64",
+    "fail_rate": "float64",
+    "max_retries": "float64"
+  },
+  "transforms": {
+    "dur_total": "standard_scaler",
+    "stage_build": "standard_scaler",
+    "stage_test": "standard_scaler",
+    "stage_deploy": "standard_scaler",
+    "fail_rate": "standard_scaler",
+    "max_retries": "standard_scaler"
+  }
+}

@@ -1,0 +1,105 @@
+[
+  {
+    "id": 2825701400,
+    "status": "success",
+    "stage": "build",
+    "name": "bash-shellcheck",
+    "ref": "refs/merge-requests/27/head",
+    "tag": false,
+    "coverage": null,
+    "allow_failure": false,
+    "created_at": "2022-08-08T07:23:12.924Z",
+    "started_at": "2022-08-08T07:23:13.442Z",
+    "finished_at": "2022-08-08T07:23:29.039Z",
+    "erased_at": null,
+    "duration": 15.596443,
+    "queued_duration": 0.212336,
+    "user": {
+      "id": 8838050,
+      "username": "tbc-bot",
+      "public_email": "",
+      "name": "to be continuous bot",
+      "state": "active",
+      "locked": false,
+      "avatar_url": "https://gitlab.com/uploads/-/system/user/avatar/8838050/avatar.png",
+      "web_url": "https://gitlab.com/tbc-bot",
+      "created_at": "2021-05-06T09:59:49.333Z",
+      "bio": "",
+      "location": "",
+      "linkedin": "",
+      "twitter": "",
+      "discord": "",
+      "website_url": "",
+      "github": "",
+      "job_title": "",
+      "pronouns": null,
+      "organization": "",
+      "bot": false,
+      "work_information": null,
+      "followers": 8,
+      "following": 0,
+      "local_time": "9:53 PM"
+    },
+    "commit": {
+      "id": "b44a991ac15a4d69bbb013e0eedb488a870e14d4",
+      "short_id": "b44a991a",
+      "created_at": "2022-08-08T07:23:10.000+00:00",
+      "parent_ids": [
+        "0e64ab8729d3eaa4f41afff5f0dc3f313cbc1b1c"
+      ],
+      "title": "chore(deps): update dependency to-be-continuous/semantic-release to v3",
+      "message": "chore(deps): update dependency to-be-continuous/semantic-release to v3\n",
+      "author_name": "to be continuous bot",
+      "author_email": "pierre.smeyers+tbc@gmail.com",
+      "authored_date": "2022-08-08T07:23:10.000+00:00",
+      "committer_name": "to be continuous bot",
+      "committer_email": "pierre.smeyers+tbc@gmail.com",
+      "committed_date": "2022-08-08T07:23:10.000+00:00",
+      "trailers": {},
+      "extended_trailers": {},
+      "web_url": "https://gitlab.com/to-be-continuous/node/-/commit/b44a991ac15a4d69bbb013e0eedb488a870e14d4"
+    },
+    "pipeline": {
+      "id": 607025781,
+      "iid": 96,
+      "project_id": 26454237,
+      "sha": "b44a991ac15a4d69bbb013e0eedb488a870e14d4",
+      "ref": "refs/merge-requests/27/head",
+      "status": "success",
+      "source": "merge_request_event",
+      "created_at": "2022-08-08T07:23:12.914Z",
+      "updated_at": "2022-08-08T07:23:29.149Z",
+      "web_url": "https://gitlab.com/to-be-continuous/node/-/pipelines/607025781"
+    },
+    "web_url": "https://gitlab.com/to-be-continuous/node/-/jobs/2825701400",
+    "project": {
+      "ci_job_token_scope_enabled": false
+    },
+    "artifacts": [
+      {
+        "file_type": "trace",
+        "size": 2991,
+        "filename": "job.log",
+        "file_format": null
+      }
+    ],
+    "runner": {
+      "id": 12270835,
+      "description": "3-blue.saas-linux-small-amd64.runners-manager.gitlab.com/default",
+      "ip_address": null,
+      "active": true,
+      "paused": false,
+      "is_shared": true,
+      "runner_type": "instance_type",
+      "name": "gitlab-runner",
+      "online": true,
+      "created_at": "2021-11-15T17:47:17.485Z",
+      "status": "online",
+      "job_execution_status": "active"
+    },
+    "runner_manager": null,
+    "artifacts_expire_at": null,
+    "archived": false,
+    "tag_list": []
+  }
+]
