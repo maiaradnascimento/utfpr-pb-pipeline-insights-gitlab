@@ -6,7 +6,7 @@ Este capítulo descreve os materiais e o método utilizados para desenvolver est
 
 \section{Materiais}\label{sec:materiais}
 
-O \autoref{quad:materiais} apresenta as ferramentas e tecnologias que foram utilizadas para o desenvolvimento do projeto. O sistema foi validado utilizando pipelines do projeto \textit{To Be Continuous - Node.js CI/CD Catalog} \citeonline{tobecontinuous2024}, um template público do GitLab que fornece pipelines CI/CD reais e representativas para projetos Node.js, incluindo múltiplos stages (build, test, deploy) e jobs variados.
+O \autoref{quad:materiais} apresenta as ferramentas e tecnologias que foram utilizadas para o desenvolvimento do projeto. O sistema foi validado utilizando \textit{pipelines} do projeto \textit{To Be Continuous - Node.js CI/CD Catalog} \cite{tobecontinuous2024}, um \textit{template} público do \gls{gitlab} que fornece \textit{pipelines} \gls{cicd} reais e representativas para projetos Node.js, incluindo múltiplos \textit{stages} (\textit{build}, \textit{test}, \textit{deploy}) e \textit{jobs} variados.
 
 \begin{tabframed}[htb]
 \centering
@@ -16,14 +16,14 @@ O \autoref{quad:materiais} apresenta as ferramentas e tecnologias que foram util
 \begin{tabular}{|p{8cm}|p{7cm}|}
 \cline{1-2}
 \textbf{Ferramenta/Tecnologia} & \textbf{Finalidade} \\ \cline{1-2}
-Python 3.11+ \footnote{https://www.python.org/} & Linguagem de programação \\ \cline{1-2}
-PostgreSQL 15 \footnote{https://www.postgresql.org/} & Banco de dados relacional \\ \cline{1-2}
-GitLab API \footnote{https://docs.gitlab.com/ee/api/} & Coleta de dados de pipelines/jobs \\ \cline{1-2}
-scikit-learn \footnote{https://scikit-learn.org/} & Machine Learning (Isolation Forest, K-Means) \\ \cline{1-2}
-pandas, numpy \footnote{https://pandas.pydata.org/, https://numpy.org/} & Processamento de dados \\ \cline{1-2}
-FastAPI \footnote{https://fastapi.tiangolo.com/} & API REST \\ \cline{1-2}
-Streamlit \footnote{https://streamlit.io/} & Interface web interativa \\ \cline{1-2}
-Docker \footnote{https://www.docker.com/} & Empacotamento e deploy \\ \cline{1-2}
+\gls{python} 3.11+ \footnote{https://www.python.org/} & Linguagem de programação \\ \cline{1-2}
+\gls{postgresql} 15 \footnote{https://www.postgresql.org/} & Banco de dados relacional \\ \cline{1-2}
+\gls{gitlab} \gls{api} \footnote{https://docs.gitlab.com/ee/api/} & Coleta de dados de \textit{pipelines}/\textit{jobs} \\ \cline{1-2}
+\gls{scikit} \footnote{https://scikit-learn.org/} & \gls{ml} (\gls{if}, \gls{kmeans}) \\ \cline{1-2}
+\gls{pandas}, \gls{numpy} \footnote{https://pandas.pydata.org/, https://numpy.org/} & Processamento de dados \\ \cline{1-2}
+\gls{fastapi} \footnote{https://fastapi.tiangolo.com/} & \gls{api} \gls{rest} \\ \cline{1-2}
+\gls{streamlit} \footnote{https://streamlit.io/} & Interface web interativa \\ \cline{1-2}
+Docker \footnote{https://www.docker.com/} & Empacotamento e \textit{deploy} \\ \cline{1-2}
 \hline
 \end{tabular}
 \end{minipage}
@@ -32,22 +32,22 @@ Docker \footnote{https://www.docker.com/} & Empacotamento e deploy \\ \cline{1-2
 
 \subsection{Justificativa das escolhas}\label{subsec:justificativaEscolhas}
 
-A escolha do ecossistema Python se justifica pela maturidade das bibliotecas de ML (scikit-learn \citeonline{pedregosa2011scikit}), processamento de dados (pandas, numpy) e facilidade de integração com APIs REST. PostgreSQL \citeonline{postgresql2024} oferece suporte nativo a JSONB para armazenamento flexível de metadados e agregações, além de suporte robusto a índices e consultas complexas \citeonline{kleppmann2017designing}. Docker facilita reprodutibilidade e deploy em diferentes ambientes, seguindo práticas de containerização modernas.
+A escolha do ecossistema \gls{python} se justifica pela maturidade das bibliotecas de \gls{ml} (\gls{scikit} \cite{pedregosa2011scikit}), processamento de dados (\gls{pandas}, \gls{numpy}) e facilidade de integração com \gls{api}s \gls{rest}. \gls{postgresql} \cite{postgresql2024} oferece suporte nativo a \gls{jsonb} para armazenamento flexível de \textit{metadados} e agregações, além de suporte robusto a índices e \textit{queries} complexas \cite{kleppmann2017designing}. Docker facilita reprodutibilidade e \textit{deploy} em diferentes ambientes, seguindo práticas de containerização modernas.
 
 \section{Método}\label{sec:metodo}
 
-O desenvolvimento seguiu uma abordagem iterativa e incremental, conforme descrito por \citeonline{sommerville2011engenharia}, com foco em validação prática e extensibilidade.
+O desenvolvimento seguiu uma abordagem iterativa e incremental, conforme descrito por \cite{sommerville2011engenharia}, com foco em validação prática e extensibilidade.
 
 \subsection{Procedimento experimental}\label{subsec:procedimentoExperimental}
 
 O procedimento experimental compreende as seguintes etapas:
 
 \begin{enumerate}
-    \item \textbf{Coleta:} O sistema foi validado utilizando pipelines do projeto \textit{To Be Continuous - Node.js CI/CD Catalog} \citeonline{tobecontinuous2024}, disponível publicamente em \url{https://gitlab.com/to-be-continuous/node}. Este projeto foi escolhido por apresentar pipelines CI/CD reais e representativas, com múltiplos stages (build, test, deploy) e jobs variados. O modelo apresentado neste trabalho foi treinado exclusivamente com dados coletados deste projeto público, totalizando n pipelines (100--1000) coletadas via API REST do GitLab. A coleta implementa paginação automática com \texttt{per\_page=100} e rate limiting de 0,1s entre requisições para respeitar limites da API. O processo utiliza o parâmetro \texttt{updated\_after} para coleta incremental, armazenando o último timestamp sincronizado em arquivo \texttt{.last\_sync.json} para garantir idempotência.
+    \item \textbf{Coleta:} O sistema foi validado utilizando \textit{pipelines} do projeto \textit{To Be Continuous - Node.js CI/CD Catalog} \cite{tobecontinuous2024}, disponível publicamente em \url{https://gitlab.com/to-be-continuous/node}. Este projeto foi escolhido por apresentar \textit{pipelines} \gls{cicd} reais e representativas, com múltiplos \textit{stages} (\textit{build}, \textit{test}, \textit{deploy}) e \textit{jobs} variados. O modelo apresentado neste trabalho foi treinado exclusivamente com dados coletados deste projeto público, totalizando n \textit{pipelines} (100--1000) coletadas via \gls{api} \gls{rest} do \gls{gitlab}. A coleta implementa paginação automática com \texttt{per\_page=100} e \textit{rate limiting} de 0,1s entre requisições para respeitar limites da \gls{api}. O processo utiliza o parâmetro \texttt{updated\_after} para coleta incremental, armazenando o último \textit{timestamp} sincronizado em arquivo \texttt{.last\_sync.\gls{json}} para garantir \textit{idempotência}.
     
-    \item \textbf{Pré-processamento:} Os dados brutos coletados (JSON) são normalizados e limpos através de transformações ETL. O sistema calcula agregados estatísticos (percentis p50, p75, p90, p95, p99) utilizando métodos robustos de estimação \citeonline{tukey1977exploratory,box1976science}. A construção de features segue o paradigma de Feature Engineering \citeonline{domingos2012few}, onde variáveis derivadas são criadas a partir de métricas primitivas. O processo inclui tratamento de valores ausentes (imputação por mediana para variáveis numéricas), normalização temporal (conversão de timestamps ISO 8601 para objetos datetime) e deduplicação baseada em chaves compostas (\texttt{project\_id + pipeline\_id}).
+    \item \textbf{Pré-processamento:} Os dados brutos coletados (\gls{json}) são normalizados e limpos através de transformações \gls{etl}. O sistema calcula agregados estatísticos utilizando percentis (p50, p75, p90, p95, p99), que são métricas robustas (resistentes a \textit{outliers}), calculados através de interpolação linear (tipo 7 de Hyndman-Fan) \cite{hyndman1996sample}. A construção de \textit{features} segue o paradigma de \textit{Feature Engineering} \cite{domingos2012few}, onde variáveis derivadas são criadas a partir de métricas primitivas. O processo inclui tratamento de valores ausentes (imputação por mediana para variáveis numéricas), normalização temporal (conversão de \textit{timestamps} ISO 8601 para objetos \textit{datetime}) e deduplicação baseada em chaves compostas (\texttt{project\_id + pipeline\_id}).
     
-    \item \textbf{Detecção:} Aplicação de \texttt{IsolationForest.fit\_predict(X)} \citeonline{liu2008isolation,liu2012isolation} com hiperparâmetros configuráveis: \texttt{contamination=0.1} (proporção esperada de anomalias), \texttt{random\_state=42} (reprodutibilidade), \texttt{n\_estimators=100} (número de árvores). O algoritmo gera scores de anomalia no intervalo $[-1, 1]$, onde valores negativos indicam anomalias. O ranking por z-score é calculado através da fórmula $z = \frac{x - \mu}{\sigma}$, onde $x$ é o valor observado, $\mu$ é a média amostral e $\sigma$ é o desvio-padrão amostral \citeonline{pearson1901lines}. Anomalias são priorizadas utilizando o z-score absoluto para determinar a feature principal que contribui para a anomalia detectada pelo Isolation Forest. A \autoref{lst:detection} apresenta a implementação do pipeline de detecção combinando K-Means e Isolation Forest.
+    \item \textbf{Detecção:} Aplicação de \texttt{IsolationForest.fit\_predict(X)} \cite{liu2008isolation,liu2012isolation} com hiperparâmetros configuráveis: \texttt{contamination=0.1} (proporção esperada de anomalias), \texttt{random\_state=42} (reprodutibilidade), \texttt{n\_estimators=200} (número de árvores). O método \texttt{score\_samples()} retorna \textit{scores} onde valores menores indicam maior grau de anomalia (observações normais têm \textit{scores} próximos de 0, anomalias têm \textit{scores} próximos de -1). O ranking por z-score é calculado através da fórmula $z = \frac{x - \mu}{\sigma}$, onde $x$ é o valor observado, $\mu$ é a média amostral e $\sigma$ é o desvio-padrão amostral \cite{pearson1901lines}. Anomalias são priorizadas utilizando o z-score absoluto para determinar a \textit{feature} principal que contribui para a anomalia detectada pelo \gls{if}. A \autoref{lst:detection} apresenta a implementação do \textit{pipeline} de detecção combinando \gls{kmeans} e \gls{if}.
 
 \begin{sourcecode}[htb]
 \caption{Pipeline de detecção: Clustering e Isolation Forest}
@@ -82,28 +82,28 @@ def recommend(self, df: pd.DataFrame) -> List[Recommendation]:
 \fonte{Autora}
 \end{sourcecode}
     
-    \item \textbf{Recomendações:} Geração de regras baseadas em padrões identificados através de análise contextual multi-feature. Cada recomendação inclui: (a) evidência numérica quantitativa (z-score, percentis, ganho estimado), (b) código YAML de exemplo gerado automaticamente seguindo a sintaxe do GitLab CI/CD \citeonline{gitlabapi}, (c) justificativa baseada em padrões aprendidos (slow\_build\_stable, slow\_tests, high\_failure). O sistema não acessa o arquivo \texttt{.gitlab-ci.yml} do projeto, gerando recomendações genéricas baseadas apenas em dados de execução.
+    \item \textbf{Recomendações:} Geração de regras baseadas em padrões identificados através de análise contextual \textit{multi-feature}. Cada recomendação inclui: (a) evidência numérica quantitativa (z-score, percentis, ganho estimado), (b) código \gls{yaml} de exemplo gerado automaticamente seguindo a sintaxe do \gls{gitlab} \gls{cicd} \cite{gitlabapi}, (c) justificativa baseada em padrões aprendidos (slow\_build\_stable, slow\_tests, high\_failure). O sistema não acessa o arquivo \texttt{.gitlab-ci.\gls{yaml}} do projeto, gerando recomendações genéricas baseadas apenas em dados de execução.
     
-    \item \textbf{Geração do dashboard:} Criação de \texttt{RELATORIO\_FINAL.html} auto-contido utilizando HTML5, CSS3 embutido. O dashboard é organizado em seções obrigatórias: (a) \textbf{Estatísticas gerais} com métricas agregadas, (b) \textbf{Insights e Análises Detalhadas} com análises agregadas de jobs (top jobs que mais falham, motivos de falha, tempo em fila, jobs instáveis), (c) \textbf{Problemas Detectados} com cards de anomalias priorizadas contendo tipo, problema, detalhes e soluções, (d) \textbf{Erros em Jobs} com lista de falhas e trechos de logs quando disponíveis, (e) \textbf{Resumo Geral} com estatísticas consolidadas. Tabelas interativas são implementadas em HTML puro com ordenação client-side via JavaScript embutido.
+    \item \textbf{Geração do \textit{dashboard}:} Criação de \texttt{RELATORIO\_FINAL.\gls{html}} auto-contido utilizando \gls{html}5, CSS3 embutido. O \textit{dashboard} é organizado em seções obrigatórias: (a) \textbf{Estatísticas gerais} com métricas agregadas, (b) \textbf{Insights e Análises Detalhadas} com análises agregadas de \textit{jobs} (\textit{top jobs} que mais falham, motivos de falha, tempo em fila, \textit{jobs} instáveis), (c) \textbf{Problemas Detectados} com \textit{cards} de anomalias priorizadas contendo tipo, problema, detalhes e soluções, (d) \textbf{Erros em \textit{Jobs}} com lista de falhas e trechos de \textit{logs} quando disponíveis, (e) \textbf{Resumo Geral} com estatísticas consolidadas. Tabelas interativas são implementadas em \gls{html} puro com ordenação \textit{client-side} via JavaScript embutido.
 \end{enumerate}
 
-\subsection{Variáveis e features}\label{subsec:variaveisFeatures}
+\subsection{Variáveis e \textit{features}}\label{subsec:variaveisFeatures}
 
-Por pipeline, as variáveis coletadas incluem:
+Por \textit{pipeline}, as variáveis coletadas incluem:
 \begin{itemize}
     \item \texttt{dur\_total}: duração total da execução
     \item \texttt{status}: sucesso, falha, cancelado
-    \item Taxa de falha: proporção de jobs falhados
+    \item Taxa de falha: proporção de \textit{jobs} falhados
     \item \texttt{max\_retries}: máximo de tentativas observado
-    \item Estágios: distribuições de duração por stage (build, test, deploy)
-    \item Horários: timestamps de criação, início e fim
+    \item Estágios: distribuições de duração por \textit{stage} (\textit{build}, \textit{test}, \textit{deploy})
+    \item Horários: \textit{timestamps} de criação, início e fim
 \end{itemize}
 
-Por stage/job:
+Por \textit{stage}/\textit{job}:
 \begin{itemize}
     \item Distribuições de duração (p50, p95, p99, média)
     \item Erros frequentes: tipos de \texttt{failure\_reason} mais comuns
-    \item Timeouts: ocorrências de cancelamento por tempo
+    \item \textit{Timeouts}: ocorrências de cancelamento por tempo
 \end{itemize}
 
 \subsection{Métricas de avaliação}\label{subsec:metricasAvaliacao}
@@ -111,9 +111,9 @@ Por stage/job:
 As métricas de avaliação incluem:
 
 \begin{itemize}
-    \item \textbf{Precisão prática:} taxa de true positives percebidos pelo engenheiro DevOps
-    \item \textbf{Tempo de execução:} tempo de processamento por análise (meta: ~2--5 min/1000 pipelines)
-    \item \textbf{Custo:} estimativa de coleta/armazenamento (ex: ~5--20 MB para 1000 pipelines)
+    \item \textbf{Precisão prática:} taxa de \textit{true positives} percebidos pelo engenheiro \gls{devops}
+    \item \textbf{Tempo de execução:} tempo de processamento por análise (meta: ~2--5 min/1000 \textit{pipelines})
+    \item \textbf{Custo:} estimativa de coleta/armazenamento (ex: ~5--20 MB para 1000 \textit{pipelines})
     \item \textbf{Utilidade:} avaliação qualitativa das recomendações (questionário Likert)
 \end{itemize}
 
@@ -122,23 +122,23 @@ As métricas de avaliação incluem:
 Estimativas operacionais:
 
 \begin{itemize}
-    \item \textbf{Coleta:} ~2--4 kB por pipeline/job (metadados) + snippets de log (até 5--10 kB/job anômalo)
-    \item \textbf{Armazenamento:} 1000 pipelines $\approx$ 5--20 MB (PostgreSQL com JSONB)
-    \item \textbf{Processamento:} container com 2 vCPU e 4 GB RAM conclui em ~2--5 min/1000 pipelines (stats + IF + K-Means)
-    \item \textbf{Operação:} executável sob demanda (sem custo fixo); opcional cron para atualização periódica
+    \item \textbf{Coleta:} ~2--4 kB por \textit{pipeline}/\textit{job} (\textit{metadados}) + \textit{snippets} de \textit{log} (até 5--10 kB/\textit{job} anômalo)
+    \item \textbf{Armazenamento:} 1000 \textit{pipelines} $\approx$ 5--20 MB (\gls{postgresql} com \gls{jsonb})
+    \item \textbf{Processamento:} \textit{container} com 2 vCPU e 4 GB RAM conclui em ~2--5 min/1000 \textit{pipelines} (\textit{stats} + \gls{if} + \gls{kmeans})
+    \item \textbf{Operação:} executável sob demanda (sem custo fixo); opcional \textit{cron} para atualização periódica
 \end{itemize}
 
 \section{Arquitetura de banco de dados}\label{sec:arquiteturaBanco}
 
-O banco de dados PostgreSQL implementa o seguinte esquema:
+O banco de dados \gls{postgresql} implementa o seguinte esquema:
 
 \begin{itemize}
-    \item \texttt{processing\_watermarks}: controle de processamento incremental (último timestamp por fonte)
-    \item \texttt{pipelines\_raw / jobs\_raw}: dados brutos (append-only)
-    \item \texttt{metrics\_daily}: agregados diários (UPSERT idempotente)
-    \item \texttt{features\_offline / features\_online}: feature store (histórico e cache)
-    \item \texttt{predictions}: predições (imutáveis por run\_id + model\_version)
-    \item \texttt{model\_registry}: versionamento de modelos, transformadores e schemas
+    \item \texttt{processing\_watermarks}: controle de processamento incremental (último \textit{timestamp} por fonte)
+    \item \texttt{pipelines\_raw / jobs\_raw}: dados brutos (\textit{append-only})
+    \item \texttt{metrics\_daily}: agregados diários (\textit{UPSERT} \textit{idempotente})
+    \item \texttt{features\_offline / features\_online}: \textit{feature store} (histórico e \textit{cache})
+    \item \texttt{predictions}: predições (imutáveis por \textit{run\_id} + \textit{model\_version})
+    \item \texttt{model\_registry}: versionamento de modelos, transformadores e \textit{schemas}
     \item \texttt{kv\_config}: configurações (MODEL\_CURRENT, etc)
 \end{itemize}
 

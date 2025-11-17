@@ -1216,11 +1216,30 @@
     \renewcommand*{\glossarypreamble}{\vspace*{0pt}}%% Definição de comandos antes do glossário
     \renewcommand*{\glossarypostamble}{\vspace*{0pt}}%% Definição de comandos após o glossário
     \setglossarysection{section}%% Estilo de seção do glossário
-    \setlength{\glsdescwidth}{135mm}%% Comprimento da descrição
+    \setlength{\glsdescwidth}{130mm}%% Comprimento da descrição
     \setlength{\glspagelistwidth}{0pt}%% Comprimento da lista de páginas
     \renewenvironment{theglossary}{%% Formatação do glossário
       \begin{Spacing}{1.5}%% Espaçamento simples entre linhas
-        \begin{xtabular}{@{}p{25mm}@{}p{\glsdescwidth}}%% Ambiente xtabular
+        \begin{xtabular}{@{}p{30mm}@{}p{\glsdescwidth}}%% Ambiente xtabular
+    }{%%
+        \end{xtabular}
+      \end{Spacing}
+    }
+  }
+  \newglossarystyle{myxtabsiglas}{%% Estilo de glossário personalizado para siglas (menos espaçamento)
+    \setglossarystyle{long}%% Estilo de glossário base
+    \renewcommand*{\glossaryheader}{}%% Conteúdo do cabeçalho do glossário
+    \renewcommand*{\glsgroupheading}[1]{}%% Conteúdo do cabeçalho de itens no glossário
+    \renewcommand*{\glsgroupskip}{}%% Espaçamento entre itens
+    \renewcommand*{\glspostdescription}{}%% Remoção do ponto no final das descrições do glossário
+    \renewcommand*{\glossarypreamble}{\vspace*{0pt}}%% Definição de comandos antes do glossário
+    \renewcommand*{\glossarypostamble}{\vspace*{0pt}}%% Definição de comandos após o glossário
+    \setglossarysection{section}%% Estilo de seção do glossário
+    \setlength{\glsdescwidth}{130mm}%% Comprimento da descrição
+    \setlength{\glspagelistwidth}{0pt}%% Comprimento da lista de páginas
+    \renewenvironment{theglossary}{%% Formatação do glossário
+      \begin{Spacing}{1.3}%% Espaçamento reduzido entre linhas
+        \begin{xtabular}{@{}p{30mm}@{}p{\glsdescwidth}}%% Ambiente xtabular
     }{%%
         \end{xtabular}
       \end{Spacing}
@@ -1228,12 +1247,13 @@
   }
   \pretextualchapter{\nomelistadeacronimos}%% Marcador
   \printglossary[type = \abbreviationtype, title = \nomeabreviaturas, style = myxtab, nonumberlist = true]%% Lista de abreviaturas
-  \printglossary[type = \pseudoacronymtype, title = \nomesiglas, style = myxtab, nonumberlist = true]%% Lista de siglas
+  \enlargethispage*{5\baselineskip}%% Aumenta o espaço disponível na página para evitar quebra (versão mais agressiva)
+  \printglossary[type = \pseudoacronymtype, title = \nomesiglas, style = myxtabsiglas, nonumberlist = true]%% Lista de siglas
   %\printglossary[type = \acronymtype, title = \nomeacronimos, style = myxtab, nonumberlist = true ]%% Lista de acrônimos
   \cleardoublepage%% Página de verso
 }
 \newcommand{\abreviatura}[3]{\newacronym[type = \abbreviationtype]{#1}{#2}{#3}}%% Entrada de abreviatura
-\newcommand{\sigla}[3]{\newacronym[type = \pseudoacronymtype]{#1}{#2}{#3}}%% Entrada de sigla
+\newcommand{\sigla}[3]{\newacronym[type = \pseudoacronymtype, first={#2}, text={#2}]{#1}{#2}{#3}}%% Entrada de sigla (sempre mostra apenas a sigla)
 \newcommand{\acronimo}[3]{\newacronym[type = \acronymtype]{#1}{#2}{#3}}%% Entrada de acrônimo
 
 %% Lista de abreviaturas, siglas e acrônimos

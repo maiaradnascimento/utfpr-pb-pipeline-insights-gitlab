@@ -6,11 +6,11 @@
 %% Título e rótulo de capítulo (rótulos não devem conter caracteres especiais, acentuados ou cedilha)
 \chapter{Introdução}\label{cap:introducao}
 
-A automação por pipelines \gls{cicd} é central no \gls{devops}, mas gargalos, instabilidades e retrabalho ainda são frequentes em ambientes de alta escala. Em contextos com políticas restritivas de acesso (compliance), é desejável extrair inteligência apenas dos artefatos de execução (metadados de pipelines/jobs e logs) para orientar melhorias. Este trabalho propõe e valida um sistema que coleta, analisa e explica o comportamento de pipelines \gls{gitlab}, sem acesso ao código-fonte, para detectar anomalias e gerar recomendações aplicáveis.
+\textit{Pipelines} de Integração Contínua e Entrega Contínua (\gls{cicd}) são centrais na cultura \gls{devops}, mas gargalos, instabilidades e retrabalho ainda são frequentes em ambientes de larga escala. Em contextos com políticas restritivas de acesso (\textit{compliance}), é desejável extrair inteligência apenas dos artefatos de execução (metadados de \textit{pipelines}/\textit{jobs} e \textit{logs}) para orientar melhorias. Este trabalho propõe e valida um sistema que coleta, analisa e explica o comportamento de \textit{pipelines} no \gls{gitlab}, sem acesso ao código-fonte, para detectar anomalias e gerar recomendações aplicáveis.
 
 \section{Problema e diferencial}\label{sec:problemaDiferencial}
 
-O problema central deste trabalho consiste em identificar e priorizar, de forma automática, anomalias e oportunidades de otimização em pipelines GitLab, com baixo acoplamento e alto respeito à privacidade. O diferencial da proposta é operar apenas com dados de execução (API + logs) e entregar recomendações acionáveis, mantendo neutralidade em relação a repositórios e YAML.
+O problema central deste trabalho consiste em identificar e priorizar, de forma automática, anomalias e oportunidades de otimização em \textit{pipelines} \gls{gitlab}, com baixo acoplamento e alto respeito à privacidade. O diferencial da proposta é operar apenas com dados de execução (\gls{api} + \textit{logs}) e entregar recomendações acionáveis, mantendo neutralidade em relação ao conteúdo dos repositórios e aos arquivos \texttt{.gitlab-ci.yml}.
 
 \section{Objetivos}\label{sec:objetivos}
 
@@ -18,15 +18,15 @@ A seguir são apresentados os objetivos geral e específicos que o presente proj
 
 \subsection{Objetivo geral}\label{subsec:objetivoGeral}
 
-Desenvolver e validar um sistema baseado em estatística robusta e \gls{ml} não supervisionado para detectar anomalias e gerar recomendações de otimização em pipelines \gls{cicd} do \gls{gitlab}, sem acesso ao código-fonte.
+Desenvolver e validar um sistema baseado em análise estatística descritiva (incluindo métodos robustos como percentis) e \gls{ml} não supervisionado para detectar anomalias e gerar recomendações de otimização em \textit{pipelines} \gls{cicd} do \gls{gitlab}, operando sem acesso ao código-fonte.
 
 \subsection{Objetivos específicos}\label{subsec:objetivosEspecificos}
 
 \begin{enumerate}
-    \item Coletar e normalizar dados de pipelines/jobs e trechos de logs via API do GitLab.
-    \item Aplicar modelos de detecção de anomalias (\gls{if}) e contextualização por agrupamento (\gls{kmeans}), combinados a estatística robusta.
-    \item Gerar recomendações automáticas (cache, paralelização, retries, timeouts, ordenação de jobs), com justificativas quantitativas e links para evidências.
-    \item Disponibilizar um dashboard auto-contido com visualizações e explicações acessíveis, adequado para revisão rápida por times DevOps.
+    \item Coletar e normalizar dados de \textit{pipelines}/\textit{jobs} e trechos de \textit{logs} via \gls{api} do \gls{gitlab}.
+    \item Aplicar modelos de detecção de anomalias (como \gls{if}) e contextualização por agrupamento (como \gls{kmeans}), combinados a análise estatística descritiva (percentis robustos e z-score).
+    \item Gerar recomendações automáticas (ex: \textit{cache}, paralelização, \textit{retries}, \textit{timeouts}, ordenação de \textit{jobs}), com justificativas quantitativas e \textit{links} para evidências.
+    \item Disponibilizar um \textit{dashboard} \gls{html} auto-contido com visualizações e explicações acessíveis, adequado para revisão rápida por times \gls{devops}.
 \end{enumerate}
 
 \section{Justificativa}\label{sec:justificativa}
@@ -34,9 +34,9 @@ Desenvolver e validar um sistema baseado em estatística robusta e \gls{ml} não
 A justificativa para este trabalho pode ser dividida em três dimensões:
 
 \begin{itemize}
-    \item \textbf{Organizacional:} reduz esforço manual de troubleshooting, padroniza heurísticas e distribui conhecimento.
-    \item \textbf{Técnica:} preserva compliance e segurança ao não ler YAML/código; facilita adoção em ambientes multi-time e multi-repo.
-    \item \textbf{Acadêmica:} demonstra a aplicabilidade de IA/\gls{ml} a um problema prático de \gls{devops} com restrição de dados, fomentando pesquisa em observabilidade de pipelines.
+    \item \textbf{Organizacional:} reduz esforço manual de \textit{troubleshooting}, padroniza heurísticas e distribui conhecimento.
+    \item \textbf{Técnica:} preserva \textit{compliance} e segurança ao não ler \gls{yaml}/código; facilita adoção em ambientes multi-time e multi-repo.
+    \item \textbf{Acadêmica:} demonstra a aplicabilidade de IA/\gls{ml} a um problema prático de \gls{devops} com restrição de dados, fomentando pesquisa em observabilidade de \textit{pipelines}.
 \end{itemize}
 
 \section{Questões de pesquisa}\label{sec:questoesPesquisa}
@@ -51,14 +51,16 @@ Este trabalho busca responder às seguintes questões:
 
 \section{Estrutura do trabalho}\label{sec:estruturaTrabalho}
 
-Este trabalho está organizado em capítulos. O Capítulo 1 apresentou a introdução do trabalho, os objetivos e a justificativa para o desenvolvimento do mesmo.
+Este trabalho está organizado em capítulos. O Capítulo 1 apresentou a introdução, os objetivos e a justificativa deste trabalho.
 
-O \gls{cap.} 2 apresenta o referencial teórico que abrange os temas e conceitos considerados essenciais para o desenvolvimento do trabalho, incluindo \gls{devops} e \gls{cicd}, detecção de anomalias, \gls{xai} e trabalhos relacionados.
+O Capítulo 2 apresenta o referencial teórico, abrangendo conceitos essenciais como \gls{devops}, \gls{cicd}, detecção de anomalias, \gls{xai} e trabalhos relacionados.
 
-No \gls{cap.} 3 são descritos os materiais e o método empregados para o desenvolvimento do trabalho, incluindo a arquitetura proposta, variáveis e features, procedimento experimental e métricas de avaliação.
+O Capítulo 3 descreve a proposta do sistema, detalhando a arquitetura proposta, os componentes principais, o fluxo de processamento e a estrutura do banco de dados.
 
-No \gls{cap.} 4 estão os resultados obtidos com a execução da metodologia proposta, incluindo artefatos gerados, achados ilustrativos e validação.
+O Capítulo 4 descreve os materiais e o método empregados, detalhando as variáveis, o procedimento experimental e as métricas de avaliação.
 
-No \gls{cap.} 5 são apresentadas as conclusões do trabalho e perspectivas futuras.
+O Capítulo 5 expõe os resultados obtidos com a execução da metodologia, incluindo artefatos gerados, achados ilustrativos e a validação da proposta.
 
-Por fim, estão as referências bibliográficas utilizadas para fundamentar este documento.
+O Capítulo 6 apresenta as conclusões do trabalho e as perspectivas para pesquisas futuras.
+
+Por fim, são listadas as referências bibliográficas que fundamentam este documento.

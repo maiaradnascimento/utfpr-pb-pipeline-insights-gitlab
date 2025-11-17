@@ -9,10 +9,10 @@ Este capítulo apresenta os resultados obtidos com o desenvolvimento e validaç�
 O sistema gera os seguintes artefatos:
 
 \begin{itemize}
-    \item \texttt{dados/processed/\{PROJECT\_ID\}/RELATORIO\_FINAL.html}: dashboard HTML auto-contido com visualizações e recomendações
+    \item \texttt{dados/processed/\{PROJECT\_ID\}/RELATORIO\_FINAL.\gls{html}}: \textit{dashboard} \gls{html} auto-contido com visualizações e recomendações
     \item \texttt{recomendacoes\_ia\_inteligente.csv}: recomendações priorizadas em formato CSV com categorias, ações, ganhos estimados e confiança
     \item \texttt{stats\_detalhadas.csv}: estatísticas descritivas (percentis, média, desvio-padrão) por métrica
-    \item Dados no banco PostgreSQL: métricas diárias, features, predições, model registry
+    \item Dados no banco \gls{postgresql}: métricas diárias, \textit{features}, predições, \textit{model registry}
 \end{itemize}
 
 \subsection{Interface Web (Streamlit)}\label{subsec:interfaceWeb}
@@ -20,12 +20,12 @@ O sistema gera os seguintes artefatos:
 O sistema inclui uma interface web interativa desenvolvida em \gls{streamlit} que permite:
 
 \begin{itemize}
-    \item \textbf{Coleta de dados:} Execução de coleta incremental via API do \gls{gitlab}
-    \item \textbf{Processamento \gls{etl}:} Execução de \gls{etl} incremental com controle de watermarks
+    \item \textbf{Coleta de dados:} Execução de coleta incremental via \gls{api} do \gls{gitlab}
+    \item \textbf{Processamento \gls{etl}:} Execução de \gls{etl} incremental com controle de \textit{watermarks}
     \item \textbf{Treinamento de modelos:} Treinamento de novos modelos com seleção de janela temporal
     \item \textbf{Visualização de métricas:} Tabelas e estatísticas com filtros de data
-    \item \textbf{Predições:} Visualização de predições por job, com explicações e evidências
-    \item \textbf{Análise de erros:} Visualização detalhada de erros de pipelines com insights e recomendações
+    \item \textbf{Predições:} Visualização de predições por \textit{job}, com explicações e evidências
+    \item \textbf{Análise de erros:} Visualização detalhada de erros de \textit{pipelines} com \textit{insights} e recomendações
     \item \textbf{Configuração:} Interface para configurar credenciais, banco de dados e parâmetros do sistema
 \end{itemize}
 
@@ -53,46 +53,46 @@ O sistema inclui uma interface web interativa desenvolvida em \gls{streamlit} qu
 \fonte{Autora}
 \end{figure}
 
-\subsection{API REST (FastAPI)}\label{subsec:apiRest}
+\subsection{\gls{api} \gls{rest} (\gls{fastapi})}\label{subsec:apiRest}
 
-O sistema expõe uma API \gls{rest} desenvolvida em \gls{fastapi} com os seguintes endpoints:
+O sistema expõe uma \gls{api} \gls{rest} desenvolvida em \gls{fastapi} com os seguintes \textit{endpoints}:
 
 \begin{itemize}
-    \item \texttt{GET /healthz}: Health check da API
+    \item \texttt{GET /healthz}: \textit{Health check} da \gls{api}
     \item \texttt{GET /metrics}: Métricas agregadas com filtros de data
-    \item \texttt{GET /predictions}: Predições atuais por job
-    \item \texttt{POST /inference}: Inferência sob demanda com features customizadas
-    \item \texttt{GET /errors}: Erros detalhados de pipelines/jobs com filtros
-    \item \texttt{GET /errors/summary}: Resumo agregado de erros por job
+    \item \texttt{GET /predictions}: Predições atuais por \textit{job}
+    \item \texttt{POST /inference}: Inferência sob demanda com \textit{features} customizadas
+    \item \texttt{GET /errors}: Erros detalhados de \textit{pipelines}/\textit{jobs} com filtros
+    \item \texttt{GET /errors/summary}: Resumo agregado de erros por \textit{job}
 \end{itemize}
 
-A API permite integração com ferramentas externas e automação de workflows.
+A \gls{api} permite integração com ferramentas externas e automação de \textit{workflows}.
 
 \begin{figure}[htpb]
 \centering
-\caption{Documentação interativa da API REST (Swagger UI)}
+\caption{Documentação interativa da \gls{api} \gls{rest} (Swagger UI)}
 \label{fig:apiSwagger}
 \includegraphics[width=0.9\textwidth]{figuras/DocumentacaoInterativaAPIREST_Swagger.png}
 \fonte{Autora}
 \end{figure}
 
-\subsection{Dashboard HTML Auto-Contido}\label{subsec:dashboardHTML}
+\subsection{\textit{Dashboard} \gls{html} Auto-Contido}\label{subsec:dashboardHTML}
 
-O dashboard \gls{html} gerado inclui as seguintes seções:
+O \textit{dashboard} \gls{html} gerado inclui as seguintes seções:
 
 \begin{itemize}
-    \item \textbf{Estatísticas gerais:} Métricas agregadas (total de pipelines, taxa de sucesso, duração média)
-    \item \textbf{Insights e Análises Detalhadas:} Análises agregadas de jobs (top jobs que mais falham, motivos de falha mais comuns, tempo médio em fila, jobs instáveis)
-    \item \textbf{Problemas Detectados:} Cards de anomalias priorizadas por score, contendo tipo de problema, detalhes e soluções sugeridas
-    \item \textbf{Erros em Jobs:} Lista de jobs que falharam com trechos de logs quando disponíveis
+    \item \textbf{Estatísticas gerais:} Métricas agregadas (total de \textit{pipelines}, taxa de sucesso, duração média)
+    \item \textbf{Insights e Análises Detalhadas:} Análises agregadas de \textit{jobs} (\textit{top jobs} que mais falham, motivos de falha mais comuns, tempo médio em fila, \textit{jobs} instáveis)
+    \item \textbf{Problemas Detectados:} \textit{Cards} de anomalias priorizadas por \textit{score}, contendo tipo de problema, detalhes e soluções sugeridas
+    \item \textbf{Erros em \textit{Jobs}:} Lista de \textit{jobs} que falharam com trechos de \textit{logs} quando disponíveis
     \item \textbf{Resumo Geral:} Estatísticas consolidadas e contadores de problemas encontrados
-    \item \textbf{Links diretos:} Para pipelines/jobs no \gls{gitlab}
+    \item \textbf{\textit{Links} diretos:} Para \textit{pipelines}/\textit{jobs} no \gls{gitlab}
 \end{itemize}
 
 
 \begin{figure}[htpb]
 \centering
-\caption{Dashboard HTML - Seção de anomalias}
+\caption{\textit{Dashboard} \gls{html} - Seção de anomalias}
 \label{fig:dashboardAnomalias}
 \includegraphics[width=0.9\textwidth]{figuras/DashboardHTML-SecaoAnomalias.png}
 \fonte{Autora}
@@ -100,7 +100,7 @@ O dashboard \gls{html} gerado inclui as seguintes seções:
 
 \begin{figure}[htpb]
 \centering
-\caption{Dashboard HTML - Recomendações geradas}
+\caption{\textit{Dashboard} \gls{html} - Recomendações geradas}
 \label{fig:dashboardRecomendacoes}
 \includegraphics[width=0.9\textwidth]{figuras/DashboardHTML-RecomendacoesGeradas.png}
 \fonte{Autora}
@@ -108,21 +108,21 @@ O dashboard \gls{html} gerado inclui as seguintes seções:
 
 \section{Achados ilustrativos}\label{sec:achadosIlustrativos}
 
-Resultados iniciais com projetos públicos do GitLab indicam os seguintes padrões e recomendações geradas:
+Resultados iniciais com projetos públicos do \gls{gitlab} indicam os seguintes padrões e recomendações geradas:
 
 \subsection{Padrão 1: Cauda Longa em Testes}\label{subsec:padrao1}
 
-Análise de distribuição de duração total (\texttt{dur\_total}) revelou cauda longa concentrada principalmente no stage \texttt{test}. A estratégia Intelligent Strategy identificou este padrão através de:
+Análise de distribuição do percentil 95 da duração (\texttt{dur\_total}, que corresponde a \texttt{p95\_duration}) revelou cauda longa concentrada principalmente no \textit{stage} \texttt{test}. A estratégia Intelligent Strategy identificou este padrão através de:
 
 \begin{itemize}
     \item Z-score elevado ($> 2.5\sigma$) para \texttt{stage\_test}
     \item Percentil p95 de \texttt{stage\_test} significativamente acima do p50
-    \item Cluster de pipelines longas com alta concentração de tempo em testes
+    \item \textit{Cluster} de \textit{pipelines} longas com alta concentração de tempo em testes
 \end{itemize}
 
-\textbf{Recomendação gerada:} Paralelização de testes com \texttt{parallel:} (2--8) e particionamento usando sharding (ex: pytest com \texttt{--shard}).
+\textbf{Recomendação gerada:} Paralelização de testes com \texttt{parallel:} (2--8) e particionamento usando \textit{sharding} (ex: pytest com \texttt{--shard}).
 
-\textbf{Evidência quantitativa:} Ganho estimado de 40--60\% no tempo de execução do stage de testes para pipelines no cluster de longas.
+\textbf{Evidência quantitativa:} Ganho estimado de 40--60\% no tempo de execução do \textit{stage} de testes para \textit{pipelines} no \textit{cluster} de longas.
 
 \subsection{Padrão 2: Correlação entre Retries e Falhas Transitórias}\label{subsec:padrao2}
 
@@ -134,23 +134,23 @@ Análise de correlação entre \texttt{max\_retries} e taxa de falha (\texttt{fa
     \item Análise contextual indicando instabilidade de infraestrutura
 \end{itemize}
 
-\textbf{Recomendação gerada:} Adicionar \texttt{retry: \{max: 2, when: runner\_system\_failure\}} e aumento de \texttt{timeout} para jobs críticos.
+\textbf{Recomendação gerada:} Adicionar \texttt{retry: \{max: 2, when: runner\_system\_failure\}} e aumento de \texttt{timeout} para \textit{jobs} críticos.
 
 \textbf{Evidência quantitativa:} Redução estimada de 15--25\% na taxa de falha após implementação de retries condicionais.
 
 \subsection{Padrão 3: Clusters e Thresholds Adaptativos}\label{subsec:padrao3}
 
-O algoritmo \gls{kmeans} (k=3) identificou três clusters distintos:
+O algoritmo \gls{kmeans} (k=3) identificou três \textit{clusters} distintos:
 
 \begin{enumerate}
-    \item \textbf{Pipelines curtas:} Duração total < p50, baixa variabilidade
-    \item \textbf{Pipelines médias:} Duração total entre p50 e p90, variabilidade moderada
-    \item \textbf{Pipelines longas:} Duração total > p90, alta variabilidade
+    \item \textbf{\textit{Pipelines} curtas:} Duração total < p50, baixa variabilidade
+    \item \textbf{\textit{Pipelines} médias:} Duração total entre p50 e p90, variabilidade moderada
+    \item \textbf{\textit{Pipelines} longas:} Duração total > p90, alta variabilidade
 \end{enumerate}
 
-\textbf{Benefício:} Thresholds adaptativos por cluster reduzem falsos positivos. Uma pipeline longa normal para seu cluster não é classificada como anomalia, enquanto uma pipeline curta com duração anormalmente alta para seu cluster é corretamente sinalizada.
+\textbf{Benefício:} \textit{Thresholds} adaptativos por \textit{cluster} reduzem falsos positivos. Uma \textit{pipeline} longa normal para seu \textit{cluster} não é classificada como anomalia, enquanto uma \textit{pipeline} curta com duração anormalmente alta para seu \textit{cluster} é corretamente sinalizada.
 
-\textbf{Evidência quantitativa:} Redução de 30--40\% em falsos positivos comparado a thresholds globais fixos.
+\textbf{Evidência quantitativa:} Redução de 30--40\% em falsos positivos comparado a \textit{thresholds} globais fixos.
 
 \subsection{Padrão 4: Build Lento e Estável}\label{subsec:padrao4}
 
@@ -159,12 +159,12 @@ A estratégia Intelligent Strategy identificou o padrão \texttt{slow\_build\_st
 \begin{itemize}
     \item \texttt{stage\_build} está ALTO/MUITO\_ALTO/EXTREMO
     \item \texttt{fail\_rate} está NORMAL/MEDIO\_ALTO
-    \item Cluster indica pipeline estável mas lenta
+    \item \textit{Cluster} indica \textit{pipeline} estável mas lenta
 \end{itemize}
 
-\textbf{Recomendação gerada:} Adicionar cache de dependências com chave baseada em \texttt{CI\_COMMIT\_REF\_SLUG} e paths configuráveis (ex: \texttt{node\_modules/}, \texttt{vendor/}).
+\textbf{Recomendação gerada:} Adicionar \textit{cache} de dependências com chave baseada em \texttt{CI\_COMMIT\_REF\_SLUG} e \textit{paths} configuráveis (ex: \texttt{node\_modules/}, \texttt{vendor/}).
 
-\textbf{Evidência quantitativa:} Ganho estimado de 50--70\% no tempo de build após implementação de cache efetivo.
+\textbf{Evidência quantitativa:} Ganho estimado de 50--70\% no tempo de \textit{build} após implementação de \textit{cache} efetivo.
 
 \section{Validação}\label{sec:validacao}
 
@@ -173,10 +173,10 @@ A validação do sistema foi realizada em duas dimensões:
 \subsection{Validação técnica}\label{subsec:validacaoTecnica}
 
 \begin{itemize}
-    \item Separação de scores do \gls{if} compatível com triagem prática
-    \item Tuning do contamination reduz falsos positivos
-    \item Processamento incremental funciona corretamente (watermark, UPSERT idempotente)
-    \item Model Registry permite versionamento e reprodutibilidade
+    \item Separação de \textit{scores} do \gls{if} compatível com triagem prática
+    \item \textit{Tuning} do \textit{contamination} reduz falsos positivos
+    \item Processamento incremental funciona corretamente (\textit{watermark}, \textit{UPSERT} \textit{idempotente})
+    \item \textit{Model Registry} permite versionamento e reprodutibilidade
 \end{itemize}
 
 \subsection{Validação qualitativa}\label{subsec:validacaoQualitativa}
@@ -186,12 +186,12 @@ Avaliação qualitativa com pares ($N \approx 3$--5) indica alta utilidade das r
 \begin{itemize}
     \item Clareza das explicações (percentis + z-score)
     \item Relevância das recomendações para otimização prática
-    \item Facilidade de acesso às evidências (links para GitLab)
+    \item Facilidade de acesso às evidências (\textit{links} para \gls{gitlab})
 \end{itemize}
 
 \section{Discussão}\label{sec:discussao}
 
-A combinação percentis + z-score com \gls{if} fornece sinal explicável e operacionalizável. Clusters aumentam a justiça dos thresholds, reduzindo viés entre projetos heterogêneos. O desenho modular (Collector/Processor/Detector/Recommender/Dashboard) facilita extensão para novos detectores (LOF, One-Class SVM), métricas de cache e hit-ratio, e explanations locais (LIME/SHAP) sem quebrar contratos.
+A combinação percentis + z-score com \gls{if} fornece sinal explicável e operacionalizável. \textit{Clusters} aumentam a justiça dos \textit{thresholds}, reduzindo viés entre projetos heterogêneos. O desenho modular (Collector/Processor/Detector/Recommender/\textit{Dashboard}) facilita extensão para novos detectores (LOF, One-Class SVM), métricas de \textit{cache} e \textit{hit-ratio}, e \textit{explanations} locais (LIME/SHAP) sem quebrar contratos.
 
 \subsection{Ameaças à validade}\label{subsec:ameacasValidade}
 
@@ -199,15 +199,15 @@ A combinação percentis + z-score com \gls{if} fornece sinal explicável e oper
     \item \textbf{Amostras pequenas:} resultados iniciais com projetos limitados
     \item \textbf{Concept drift:} distribuições podem mudar ao longo do tempo
     \item \textbf{Viés de seleção:} projetos públicos podem não representar todos os cenários
-    \item \textbf{Cobertura de logs limitada:} API do GitLab pode não retornar logs completos em todos os casos
+    \item \textbf{Cobertura de \textit{logs} limitada:} \gls{api} do \gls{gitlab} pode não retornar \textit{logs} completos em todos os casos
 \end{itemize}
 
 \subsection{Limitações}\label{subsec:limitacoes}
 
 \begin{itemize}
-    \item Sistema opera apenas com dados de execução (não analisa código ou YAML)
+    \item Sistema opera apenas com dados de execução (não analisa código ou \gls{yaml})
     \item Recomendações são genéricas (não específicas ao contexto do projeto)
-    \item Requer acesso à API do \gls{gitlab} com permissão \texttt{read\_api}
+    \item Requer acesso à \gls{api} do \gls{gitlab} com permissão \texttt{read\_api}
     \item Processamento de grandes volumes pode exigir otimizações adicionais
 \end{itemize}
 
@@ -216,9 +216,9 @@ A combinação percentis + z-score com \gls{if} fornece sinal explicável e oper
 Este trabalho contribui com:
 
 \begin{itemize}
-    \item Prova de conceito open source com foco em privacidade (sem acesso a código-fonte)
-    \item Arquitetura incremental e idempotente para processamento eficiente
-    \item Model Registry para versionamento e reprodutibilidade
-    \item Dashboard auto-contido com explicações acessíveis (\gls{xai} leve)
-    \item API REST e UI interativa para uso prático
+    \item Prova de conceito \textit{open source} com foco em privacidade (sem acesso a código-fonte)
+    \item Arquitetura incremental e \textit{idempotente} para processamento eficiente
+    \item \textit{Model Registry} para versionamento e reprodutibilidade
+    \item \textit{Dashboard} auto-contido com explicações acessíveis (\gls{xai} leve)
+    \item \gls{api} \gls{rest} e UI interativa para uso prático
 \end{itemize}
